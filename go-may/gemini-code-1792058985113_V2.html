@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gõ 10 Ngón — Luyện gõ tiếng Việt hiện đại</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --danger: #ef4444;
+
+      /* Màu pastel hiện đại theo từng ngón - dịu mắt, tinh tế */
+      --c-pinky: #f43f5e;
+      --c-ring: #f97316;
+      --c-middle: #10b981;
+      --c-index-l: #3b82f6;
+      --c-index-r: #8b5cf6;
+      --c-thumb: #06b6d4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* HEADER TỐI GIẢN */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.01em;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pill-select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* BỐ CỤC CHÍNH */
+    .app-layout {
+      max-width: 1140px;
+      width: 100%;
+      margin: 28px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 28px;
+      flex: 1;
+    }
+    @media (max-width: 900px) {
+      .app-layout { grid-template-columns: 1fr; }
+    }
+
+    /* SIDEBAR LỘ TRÌNH DẠNG MINIMAL */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .sidebar-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      padding-left: 6px;
+    }
+    .lesson-nav {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 580px;
+      overflow-y: auto;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .nav-item:hover {
+      background: var(--bg);
+    }
+    .nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .nav-item .lock-icon {
+      color: var(--muted);
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    /* VÙNG LUYỆN TẬP TRUNG TÂM */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    /* THANH THỐNG KÊ GỌN */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .lesson-info h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .lesson-info p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .metrics {
+      display: flex;
+      gap: 16px;
+    }
+    .metric {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .metric span {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-left: 4px;
+    }
+
+    /* MÀN HIỆN CHỮ PHONG CÁCH MONKEYTYPE */
+    .display-box {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: 24px;
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      line-height: 1.6;
+      min-height: 110px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      user-select: none;
+      border: 1px solid transparent;
+      transition: border 0.2s;
+    }
+    .display-box:focus-within {
+      border-color: var(--primary);
+      background: #ffffff;
+    }
+    .char {
+      color: #94a3b8;
+      border-radius: 4px;
+      transition: color 0.1s;
+    }
+    .char.done {
+      color: var(--text);
+    }
+    .char.current {
+      color: var(--primary);
+      border-bottom: 2.5px solid var(--primary);
+    }
+    .char.wrong {
+      color: var(--danger);
+      background: #fee2e2;
+    }
+
+    /* Ô NHẬP ẨN / MƯỢT */
+    .hidden-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* CHỈ DẪN NGÓN ĐẸP NHẸ NHÀNG */
+    .finger-hint {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding: 0 4px;
+    }
+    .key-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .target-bubble {
+      background: #0f172a;
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* BÀN PHÍM BO CONG HIỆN ĐẠI */
+    .keyboard-card {
+      background: #f1f5f9;
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      user-select: none;
+    }
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+    .k-cap {
+      height: 44px;
+      min-width: 44px;
+      background: #ffffff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #334155;
+      box-shadow: 0 2px 0 #cbd5e1;
+      position: relative;
+      transition: all 0.08s ease;
+    }
+    .k-cap.w-space { min-width: 260px; }
+    
+    /* Vạch màu nhỏ dưới chân phím thay vì bôi màu cả phím */
+    .k-cap::after {
+      content: "";
+      position: absolute;
+      bottom: 3px;
+      width: 14px;
+      height: 3px;
+      border-radius: 99px;
+      background: transparent;
+    }
+    .k-cap[data-f="LP"]::after, .k-cap[data-f="RP"]::after { background: var(--c-pinky); }
+    .k-cap[data-f="LR"]::after, .k-cap[data-f="RR"]::after { background: var(--c-ring); }
+    .k-cap[data-f="LM"]::after, .k-cap[data-f="RM"]::after { background: var(--c-middle); }
+    .k-cap[data-f="LI"]::after { background: var(--c-index-l); }
+    .k-cap[data-f="RI"]::after { background: var(--c-index-r); }
+    .k-cap[data-f="TH"]::after { background: var(--c-thumb); }
+
+    /* Nút có gai F và J */
+    .k-cap.bump::before {
+      content: "";
+      position: absolute;
+      top: 26px;
+      width: 8px;
+      height: 2px;
+      background: #94a3b8;
+      border-radius: 2px;
+    }
+
+    /* Hiệu ứng phím đang chờ bấm */
+    .k-cap.active-key {
+      background: #0f172a;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+      transform: translateY(-2px);
+    }
+    .k-cap.active-key::after { display: none; }
+
+    /* BÀN TAY SVG MỀM MẠI */
+    .hands-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 10px;
+    }
+    .hand-svg {
+      width: 180px;
+      height: 100px;
+    }
+    .f-node {
+      fill: #e2e8f0;
+      transition: all 0.2s;
+    }
+    .f-node.glow {
+      fill: var(--primary);
+      transform: translateY(-4px);
+    }
+
+    /* POPUP THANH TOÁN TINH TẾ (CHỈ XUẤT HIỆN KHI CẦN) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .clean-modal {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 32px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .qr-frame {
+      width: 160px;
+      height: 160px;
+      border-radius: 16px;
+      margin: 18px auto;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .btn-unlock {
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 12px;
+      transition: 0.15s;
+    }
+    .btn-unlock:hover { background: #334155; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER GỌN GÀNG -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⌨</div>
+      <span>Gõ 10 Ngón</span>
+    </div>
+    <div class="header-controls">
+      <select id="sound-mode" class="pill-select">
+        <option value="thock">Âm phím: Êm trầm (Thock)</option>
+        <option value="click">Âm phím: Clicky</option>
+        <option value="mute">Tắt âm</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- NỘI DUNG CHÍNH -->
+  <div class="app-layout">
+    <!-- CỘT BÀI HỌC (KHÔNG BÁN HÀNG VỒ VẬP) -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lộ trình học</div>
+      <div class="lesson-nav" id="lesson-nav">
+        <!-- Tự render từ JavaScript -->
+      </div>
+    </aside>
+
+    <!-- KHU VỰC LUYỆN TẬP TẬP TRUNG -->
+    <main class="workspace">
+      <div class="panel">
+        <div class="status-bar">
+          <div class="lesson-info">
+            <h2 id="l-title">Làm quen hàng phím cơ sở</h2>
+            <p id="l-desc">Giữ ngón trỏ tại hai phím F và J</p>
+          </div>
+          <div class="metrics">
+            <div class="metric">Tốc độ: <span id="m-wpm">0</span> wpm</div>
+            <div class="metric">Chính xác: <span id="m-acc">100</span>%</div>
+          </div>
+        </div>
+
+        <!-- MÀN HIỆN CHỮ BẤM VÀO ĐỂ GÕ -->
+        <div class="display-box" id="display-box" tabindex="0">
+          <!-- Render các ký tự -->
+        </div>
+        <input type="text" id="type-capture" class="hidden-input" autocomplete="off" />
+
+        <div class="finger-hint">
+          <div class="key-badge">
+            <span>Bấm phím:</span>
+            <span class="target-bubble" id="target-key-bubble">F</span>
+          </div>
+          <div style="font-size: 0.88rem; color: var(--muted);" id="finger-hint-text">
+            Ngón trỏ tay trái
+          </div>
+        </div>
+      </div>
+
+      <!-- BÀN PHÍM & BÀN TAY HIỆN ĐẠI -->
+      <div class="keyboard-card">
+        <div id="keyboard-grid"></div>
+
+        <div class="hands-wrap">
+          <!-- Tay trái -->
+          <svg class="hand-svg" viewBox="0 0 160 80">
+            <path d="M 30,50 C 30,30 35,20 40,20 C 45,20 48,30 48,50" class="f-node" id="fn-LP" stroke="#fff" stroke-width="2"/>
+            <path d="M 50,50 C 50,20 56,10 62,10 C 68,10 70,20 70,50" class="f-node" id="fn-LR" stroke="#fff" stroke-width="2"/>
+            <path d="M 72,50 C 72,15 78,5 84,5 C 90,5 92,15 92,50" class="f-node" id="fn-LM" stroke="#fff" stroke-width="2"/>
+            <path d="M 94,50 C 94,22 100,12 106,12 C 112,12 114,22 114,50" class="f-node" id="fn-LI" stroke="#fff" stroke-width="2"/>
+            <path d="M 116,55 C 122,40 135,35 142,40 C 146,44 140,55 125,65" class="f-node" id="fn-TH-L" stroke="#fff" stroke-width="2"/>
+          </svg>
+          <!-- Tay phải -->
+          <svg class="hand-svg" viewBox="0 0 160 80">
+            <path d="M 44,65 C 29,55 23,44 27,40 C 34,35 47,40 53,55" class="f-node" id="fn-TH-R" stroke="#fff" stroke-width="2"/>
+            <path d="M 55,50 C 55,22 57,12 63,12 C 69,12 75,22 75,50" class="f-node" id="fn-RI" stroke="#fff" stroke-width="2"/>
+            <path d="M 77,50 C 77,15 79,5 85,5 C 91,5 97,15 97,50" class="f-node" id="fn-RM" stroke="#fff" stroke-width="2"/>
+            <path d="M 99,50 C 99,20 101,10 107,10 C 113,10 119,20 119,50" class="f-node" id="fn-RR" stroke="#fff" stroke-width="2"/>
+            <path d="M 121,50 C 121,30 124,20 129,20 C 134,20 139,30 139,50" class="f-node" id="fn-RP" stroke="#fff" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- POPUP TINH TẾ (CHỈ MỞ KHI CẦN) -->
+  <div class="modal-overlay" id="pay-modal">
+    <div class="clean-modal">
+      <button class="modal-close" onclick="toggleModal(false)">×</button>
+      <div style="font-size: 2rem; margin-bottom: 8px;">☕</div>
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 6px;">Mở khóa trọn bộ 15 ngày</h3>
+      <p style="font-size: 0.9rem; color: var(--muted); line-height: 1.4;">
+        Ủng hộ tác giả 1 ly cà phê (50.000đ) để mở khóa toàn bộ bài tập và chế độ luyện gõ nâng cao trọn đời.
+      </p>
+
+      <div class="qr-frame">
+        Quét mã VietQR (50k)
+      </div>
+
+      <button class="btn-unlock" onclick="unlockAllDemo()">
+        Mở khóa trải nghiệm thử (Demo)
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ÂM PHÍM BẰNG WEB AUDIO API
+    let aCtx = null;
+    function playAudio(isErr = false) {
+      const mode = document.getElementById("sound-mode").value;
+      if (mode === "mute") return;
+      if (!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const t = aCtx.currentTime;
+      const osc = aCtx.createOscillator();
+      const gain = aCtx.createGain();
+      osc.connect(gain);
+      gain.connect(aCtx.destination);
+
+      if (isErr) {
+        osc.frequency.setValueAtTime(120, t);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.linearRampToValueAtTime(0.01, t + 0.1);
+        osc.start(t); osc.stop(t + 0.1);
+      } else if (mode === "thock") {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(260, t);
+        osc.frequency.exponentialRampToValueAtTime(60, t + 0.05);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+        osc.start(t); osc.stop(t + 0.05);
+      } else {
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(900, t);
+        osc.frequency.exponentialRampToValueAtTime(300, t + 0.03);
+        gain.gain.setValueAtTime(0.15, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+        osc.start(t); osc.stop(t + 0.03);
+      }
+    }
+
+    // DỮ LIỆU LỘ TRÌNH (TỐI GIẢN)
+    const DAYS = [
+      { id: 1, name: "Ngày 1: Phím F và J", desc: "Hàng phím cơ sở", free: true, text: "f j f j ff jj fj jf" },
+      { id: 2, name: "Ngày 2: Phím D và K", desc: "Mở rộng ngón giữa", free: true, text: "d k d k fd jk df kj" },
+      { id: 3, name: "Ngày 3: Gõ từ có nghĩa", desc: "Ghép các từ đơn giản", free: true, text: "da ga ha la sa da" },
+      { id: 4, name: "Ngày 4: Hàng phím trên (E, I)", desc: "Vươn ngón lên", free: false, text: "de ki ed ik me le" },
+      { id: 5, name: "Ngày 5: Quy tắc gõ Telex", desc: "Ghép dấu tiếng Việt", free: false, text: "aa ee oo ow uw dd" },
+      { id: 6, name: "Ngày 6: Đoạn văn thực tế", desc: "Luyện gõ mượt mà", free: false, text: "hoc go muoi ngon moi ngay" },
+    ];
+
+    const KB_LAYOUT = [
+      [{k:"q",f:"LP"},{k:"w",f:"LR"},{k:"e",f:"LM"},{k:"r",f:"LI"},{k:"t",f:"LI"},{k:"y",f:"RI"},{k:"u",f:"RI"},{k:"i",f:"RM"},{k:"o",f:"RR"},{k:"p",f:"RP"}],
+      [{k:"a",f:"LP"},{k:"s",f:"LR"},{k:"d",f:"LM"},{k:"f",f:"LI",b:1},{k:"g",f:"LI"},{k:"h",f:"RI"},{k:"j",f:"RI",b:1},{k:"k",f:"RM"},{k:"l",f:"RR"}],
+      [{k:"z",f:"LP"},{k:"x",f:"LR"},{k:"c",f:"LM"},{k:"v",f:"LI"},{k:"b",f:"LI"},{k:"n",f:"RI"},{k:"m",f:"RI"}],
+      [{k:" ",f:"TH",sp:1}]
+    ];
+
+    const F_MAP = {
+      LP: "Ngón út trái", LR: "Ngón áp út trái", LM: "Ngón giữa trái", LI: "Ngón trỏ trái",
+      RI: "Ngón trỏ phải", RM: "Ngón giữa phải", RR: "Ngón áp út phải", RP: "Ngón út phải", TH: "Ngón cái"
+    };
+
+    let activeDay = 0;
+    let charIdx = 0;
+    let mistakes = 0;
+    let totalChars = 0;
+    let isUnlocked = false;
+
+    function renderNav() {
+      const container = document.getElementById("lesson-nav");
+      container.innerHTML = "";
+      DAYS.forEach((d, i) => {
+        const btn = document.createElement("button");
+        btn.className = "nav-item" + (i === activeDay ? " active" : "");
+        const locked = !d.free && !isUnlocked;
+        btn.innerHTML = `
+          <span>${d.name}</span>
+          ${locked ? '<span class="lock-icon">🔒</span>' : ''}
+        `;
+        btn.onclick = () => {
+          if (locked) { toggleModal(true); return; }
+          activeDay = i;
+          renderNav();
+          loadLesson();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderKeyboard() {
+      const grid = document.getElementById("keyboard-grid");
+      grid.innerHTML = "";
+      KB_LAYOUT.forEach(row => {
+        const rEl = document.createElement("div");
+        rEl.className = "kb-row";
+        row.forEach(item => {
+          const cap = document.createElement("div");
+          cap.className = "k-cap" + (item.sp ? " w-space" : "") + (item.b ? " bump" : "");
+          cap.dataset.key = item.k;
+          cap.dataset.f = item.f;
+          cap.textContent = item.sp ? "space" : item.k.toUpperCase();
+          rEl.appendChild(cap);
+        });
+        grid.appendChild(rEl);
+      });
+    }
+
+    function loadLesson() {
+      charIdx = 0; mistakes = 0; totalChars = 0;
+      const lesson = DAYS[activeDay];
+      document.getElementById("l-title").textContent = lesson.name;
+      document.getElementById("l-desc").textContent = lesson.desc;
+      updateDisplay();
+      document.getElementById("display-box").focus();
+    }
+
+    function updateDisplay() {
+      const text = DAYS[activeDay].text;
+      const box = document.getElementById("display-box");
+      box.innerHTML = "";
+      [...text].forEach((c, idx) => {
+        const s = document.createElement("span");
+        s.className = "char" + (idx < charIdx ? " done" : idx === charIdx ? " current" : "");
+        s.textContent = c;
+        box.appendChild(s);
+      });
+
+      const nextChar = text[charIdx] || "";
+      highlightFinger(nextChar);
+    }
+
+    function highlightFinger(char) {
+      document.querySelectorAll(".k-cap").forEach(el => el.classList.remove("active-key"));
+      document.querySelectorAll(".f-node").forEach(el => el.classList.remove("glow"));
+
+      if (!char) return;
+      const target = char.toLowerCase();
+      const cap = document.querySelector(`.k-cap[data-key="${CSS.escape(target)}"]`);
+      const bubble = document.getElementById("target-key-bubble");
+      const label = document.getElementById("finger-hint-text");
+
+      bubble.textContent = target === " " ? "SPACE" : target.toUpperCase();
+
+      if (cap) {
+        cap.classList.add("active-key");
+        const fCode = cap.dataset.f;
+        label.textContent = F_MAP[fCode] || "Ngón tay";
+
+        if (fCode === "TH") {
+          document.getElementById("fn-TH-L").classList.add("glow");
+          document.getElementById("fn-TH-R").classList.add("glow");
+        } else {
+          const node = document.getElementById("fn-" + fCode);
+          if (node) node.classList.add("glow");
+        }
+      }
+    }
+
+    // NHẬN PHÍM TỰ NHIÊN
+    window.addEventListener("keydown", (e) => {
+      if (document.getElementById("pay-modal").classList.contains("open")) return;
+      const text = DAYS[activeDay].text;
+      if (charIdx >= text.length) return;
+      if (e.key.length !== 1) return;
+      e.preventDefault();
+
+      totalChars++;
+      const expected = text[charIdx];
+
+      if (e.key.toLowerCase() === expected.toLowerCase()) {
+        playAudio(false);
+        charIdx++;
+        updateDisplay();
+        if (charIdx >= text.length) {
+          setTimeout(() => {
+            if (activeDay === 2 && !isUnlocked) {
+              // Hoàn thành hết 3 ngày miễn phí đầu tiên -> Gợi ý mở tiếp rất lịch sự
+              toggleModal(true);
+            } else if (activeDay < DAYS.length - 1) {
+              activeDay++;
+              renderNav();
+              loadLesson();
+            }
+          }, 300);
+        }
+      } else {
+        mistakes++;
+        playAudio(true);
+      }
+
+      // Cập nhật điểm
+      const acc = totalChars > 0 ? Math.round(((totalChars - mistakes) / totalChars) * 100) : 100;
+      document.getElementById("m-acc").textContent = acc;
+    });
+
+    function toggleModal(open) {
+      const m = document.getElementById("pay-modal");
+      if (open) m.classList.add("open");
+      else m.classList.remove("open");
+    }
+
+    function unlockAllDemo() {
+      isUnlocked = true;
+      toggleModal(false);
+      renderNav();
+    }
+
+    // Bấm vào khung hiển thị để sẵn sàng gõ
+    document.getElementById("display-box").addEventListener("click", () => {
+      document.getElementById("display-box").focus();
+    });
+
+    renderKeyboard();
+    renderNav();
+    loadLesson();
+  </script>
+</body>
+</html>

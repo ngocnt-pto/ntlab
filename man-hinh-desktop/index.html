@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Màn Hình Desktop: Đồng hồ làm việc tối giản, Pomodoro chống xao nhãng, âm thanh tập trung và sổ tay phím tắt.">
+  <title>Màn Hình Desktop · Không gian tập trung & Pomodoro</title>
+  <link rel="stylesheet" href="../shared/hub-bar.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="../shared/catalog.js"></script>
+  <script defer src="../shared/platform.js"></script>
+  <script defer src="../shared/firebase-config.js"></script>
+  <script defer src="../shared/firebase-cloud.js"></script>
+  <script defer src="../shared/hub-bar.js"></script>
+  <script defer src="src/app.js"></script>
+</head>
+<body>
+  <main class="md-shell">
+    <header class="md-header">
+      <div class="md-brand">
+        <h1>🖥️ Màn Hình Desktop</h1>
+        <span id="plan-status" class="md-badge">Miễn phí · Mở Plus 39k</span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="button" id="share-focus" class="button secondary">Tải Thẻ Tập Trung</button>
+        <button type="button" id="open-checkout" class="button primary">Mở khóa Plus · 39k</button>
+      </div>
+    </header>
+
+    <div class="md-grid">
+      <section class="md-card" aria-label="Đồng hồ và bộ đếm Pomodoro">
+        <div class="md-kicker">THỜI GIAN THỰC · KHÔNG GIAN TẬP TRUNG</div>
+        <div id="live-clock" class="clock-display">08:00:00</div>
+        <div id="live-date" class="clock-date">Thứ Hai, 26 tháng 10, 2026</div>
+
+        <div class="pomo-box">
+          <div class="md-kicker">CHU KỲ LÀM VIỆC SÂU (POMODORO)</div>
+          <div class="pomo-modes">
+            <button type="button" class="chip-btn active" data-minutes="25" data-tier="free">25 phút</button>
+            <button type="button" class="chip-btn" data-minutes="50" data-tier="plus">50 phút 🔒</button>
+            <button type="button" class="chip-btn" data-minutes="90" data-tier="plus">90 phút 🔒</button>
+          </div>
+          <div id="pomo-timer" class="pomo-timer">25:00</div>
+          <div class="pomo-actions">
+            <button type="button" id="pomo-toggle" class="button primary">Bắt đầu tập trung</button>
+            <button type="button" id="pomo-reset" class="button secondary">Đặt lại</button>
+          </div>
+          <p id="session-stats" style="margin-top:12px;font-size:13px;color:#94a3b8;">Đã hoàn thành: 0 phiên (0 phút sâu)</p>
+        </div>
+
+        <div style="margin-top:20px;">
+          <div class="md-kicker">3 VIỆC QUAN TRỌNG NHẤT HÔM NAY</div>
+          <div id="todo-list" class="todo-list"></div>
+        </div>
+      </section>
+
+      <aside style="display:flex;flex-direction:column;gap:20px;">
+        <section class="md-card" aria-label="Âm thanh trắng tập trung">
+          <div class="md-kicker">ÂM THANH NỀN WEB AUDIO · KHÔNG TỐN MẠNG</div>
+          <h2 style="font-size:18px;margin-bottom:4px;">Tách biệt tiếng ồn xung quanh</h2>
+          <p style="font-size:13px;color:#94a3b8;">Âm thanh được tổng hợp trực tiếp trên trình duyệt của bạn.</p>
+          <div class="sound-grid">
+            <button type="button" class="chip-btn" data-sound="rain" data-label="Mưa đêm nhẹ" data-tier="free">Mưa đêm nhẹ</button>
+            <button type="button" class="chip-btn" data-sound="waves" data-label="Sóng biển trầm" data-tier="plus">Sóng biển trầm 🔒</button>
+            <button type="button" class="chip-btn" data-sound="wind" data-label="Gió đồi thông" data-tier="plus">Gió đồi thông 🔒</button>
+          </div>
+        </section>
+
+        <section class="md-card" aria-label="Phím tắt năng suất">
+          <div class="md-kicker">SỔ TAY PHÍM TẮT NHANH</div>
+          <h2 style="font-size:18px;margin-bottom:4px;">Thao tác không rời bàn phím</h2>
+          <div class="shortcut-list">
+            <div class="shortcut-item"><span>Chuyển nhanh cửa sổ</span><kbd>Alt + Tab</kbd></div>
+            <div class="shortcut-item"><span>Mở bàn làm việc ảo mới</span><kbd>Win + Ctrl + D</kbd></div>
+            <div class="shortcut-item"><span>Chia đôi màn hình trái/phải</span><kbd>Win + ← / →</kbd></div>
+            <div class="shortcut-item"><span>Khóa nhanh máy tính khi rời bàn</span><kbd>Win + L</kbd></div>
+            <div class="shortcut-item"><span>Mở lịch sử Clipboard</span><kbd>Win + V</kbd></div>
+          </div>
+          <p style="margin-top:12px;font-size:12.5px;color:#94a3b8;">
+            Muốn gõ nhanh cả 10 ngón không cần nhìn bàn phím? <a href="../go-may/" style="color:#38bdf8;font-weight:700;">Mở Tập Gõ Máy Tính →</a>
+          </p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <button type="button" class="modal-close" aria-label="Đóng">✕</button>
+    <div id="modal-content"></div>
+  </dialog>
+</body>
+</html>

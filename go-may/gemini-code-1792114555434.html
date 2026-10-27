@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tập Gõ Máy Tính — Gõ 10 Ngón Trong 15 Ngày & AI Tạo Bài Gõ</title>
+  <link rel="stylesheet" href="../shared/hub-bar.css" />
+  <script defer src="../shared/catalog.js"></script>
+  <script defer src="../shared/platform.js"></script>
+  <script defer src="../shared/firebase-config.js"></script>
+  <script defer src="../shared/firebase-cloud.js"></script>
+  <script defer src="../shared/hub-bar.js"></script>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --danger: #ef4444;
+      --success: #10b981;
+
+      --f-pinky: #f43f5e;
+      --f-ring: #f97316;
+      --f-middle: #10b981;
+      --f-index-l: #3b82f6;
+      --f-index-r: #8b5cf6;
+      --f-thumb: #0d9488;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    html, body {
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 1 THANH HEADER DUY NHẤT */
+    .unified-topbar {
+      height: 52px;
+      flex-shrink: 0;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1e293b;
+      gap: 10px;
+      z-index: 40;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .back-hub-link {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: 0.15s;
+    }
+    .back-hub-link:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .brand-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge-hot {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .select-sound {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .btn {
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 6px 11px;
+      font-size: 0.78rem;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .btn-pro {
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(234, 88, 12, 0.3);
+    }
+    .btn-pro:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+    .btn-ai {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.28);
+    }
+    .btn-ai:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+    .btn-ghost {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+    .btn-ghost:hover {
+      background: #334155;
+      color: #fff;
+    }
+    .btn-ghost.logged-in {
+      border-color: rgba(56, 189, 248, 0.5);
+      color: #7dd3fc;
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* BỐ CỤC 3 CỘT TRỌN VẸN TRONG 1 MÀN HÌNH */
+    .workspace {
+      flex: 1;
+      min-height: 0;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      padding: clamp(6px, 1vh, 12px) clamp(8px, 1.1vw, 16px);
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr) 275px;
+      gap: clamp(8px, 1vw, 14px);
+    }
+
+    /* CỘT TRÁI */
+    .sidebar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      overflow: hidden;
+    }
+    .left-hook-banner {
+      background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+      color: #fff;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .left-hook-tag {
+      display: inline-block;
+      background: rgba(251, 191, 36, 0.22);
+      color: #fde047;
+      font-size: 0.64rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 99px;
+      margin-bottom: 3px;
+    }
+    .left-hook-banner h2 {
+      font-size: 0.82rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+    .left-hook-banner p {
+      font-size: 0.68rem;
+      color: #bfdbfe;
+      margin-top: 2px;
+    }
+    .day-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .day-list::-webkit-scrollbar { width: 4px; }
+    .day-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+    .day-item {
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 9px;
+      cursor: pointer;
+      background: #fff;
+      text-align: left;
+      transition: all 0.12s ease;
+    }
+    .day-item:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+    .day-item.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: inset 0 0 0 1px var(--primary);
+    }
+    .day-item.hook {
+      border-color: #fcd34d;
+      background: #fffbeb;
+    }
+    .day-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--text-sub);
+    }
+    .badge-free {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 1px 5px;
+      border-radius: 99px;
+      font-size: 0.62rem;
+    }
+    .badge-lock {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 1px 5px;
+      border-radius: 99px;
+      font-size: 0.62rem;
+    }
+    .day-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .day-desc {
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .left-guarantee-box {
+      padding: 9px 11px;
+      background: #fffbeb;
+      border-top: 1px solid #fde68a;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .left-guarantee-box strong {
+      font-size: 0.74rem;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .left-guarantee-box span {
+      font-size: 0.68rem;
+      color: #b45309;
+      line-height: 1.3;
+    }
+
+    /* CỘT GIỮA: BÀN LUYỆN GÕ TRỌN TRONG 1 MÀN HÌNH */
+    .stage {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: clamp(8px, 1.2vh, 14px) clamp(12px, 1.4vw, 18px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+      gap: clamp(4px, 0.8vh, 8px);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Thanh chuyển chế độ: Lộ trình 15 ngày | AI Tạo Bài Gõ | Tự Dán Văn Bản */
+    .mode-switcher-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-bottom: clamp(4px, 0.7vh, 7px);
+      border-bottom: 1px solid var(--border);
+    }
+    .mode-tabs {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 10px;
+      gap: 3px;
+    }
+    .mode-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .mode-tab.active {
+      background: #fff;
+      color: var(--text-main);
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+    }
+    .mode-tab.ai-tab.active {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+    .stat-pill strong {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-left: 2px;
+    }
+    .stat-pill.timer-pill {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+    .stat-pill.timer-pill strong {
+      color: #1d4ed8;
+    }
+
+    /* Thanh công cụ AI / Tự dán văn bản (Hiện khi chọn tab tương ứng) */
+    .ai-toolbar {
+      display: none;
+      background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+      border: 1px solid #c4b5fd;
+      border-radius: 11px;
+      padding: 7px 10px;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .ai-toolbar.visible { display: flex; }
+    .ai-presets {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .ai-chip {
+      border: 1px solid #c4b5fd;
+      background: #fff;
+      color: #5b21b6;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: 0.12s;
+    }
+    .ai-chip:hover, .ai-chip.active {
+      background: #7c3aed;
+      color: #fff;
+      border-color: #7c3aed;
+    }
+    .ai-custom-prompt {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+      min-width: 210px;
+    }
+    .ai-custom-prompt input {
+      flex: 1;
+      padding: 4px 9px;
+      border-radius: 7px;
+      border: 1px solid #c4b5fd;
+      font-size: 0.74rem;
+      outline: none;
+    }
+
+    .custom-text-toolbar {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 7px 10px;
+      gap: 8px;
+      align-items: center;
+    }
+    .custom-text-toolbar.visible { display: flex; }
+    .custom-text-toolbar input {
+      flex: 1;
+      padding: 5px 10px;
+      border-radius: 7px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.76rem;
+      outline: none;
+    }
+
+    .sub-and-guide {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .sub-lessons {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .sub-btn {
+      padding: 3px 9px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-sub);
+      font-weight: 600;
+      font-size: 0.73rem;
+      cursor: pointer;
+      transition: 0.12s;
+    }
+    .sub-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .finger-guide-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-soft);
+      border: 1px solid #bfdbfe;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+    .next-key-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 1px 8px;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .telex-hint {
+      font-size: 0.69rem;
+      color: #b45309;
+      background: #fef3c7;
+      padding: 2px 7px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    .typing-zone {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(5px, 0.8vh, 8px);
+    }
+    .prompt-box {
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 12px;
+      padding: clamp(8px, 1.4vh, 14px) 16px;
+      font-size: clamp(1rem, 1.85vh, 1.28rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      min-height: clamp(54px, 8.5vh, 82px);
+      max-height: 115px;
+      overflow-y: auto;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+      user-select: none;
+      line-height: 1.5;
+    }
+    .char {
+      display: inline-block;
+      padding: 1px 2.5px;
+      border-radius: 4px;
+      white-space: pre;
+    }
+    .char.done { color: #34d399; }
+    .char.current {
+      background: #fbbf24;
+      color: #0f172a;
+      font-weight: 800;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.45);
+    }
+    .char.wrong { background: #ef4444; color: #fff; }
+    .word-token { margin-right: 7px; padding: 1px 5px; border-radius: 5px; }
+    .word-token.done { color: #34d399; }
+    .word-token.current { background: #fbbf24; color: #0f172a; font-weight: 800; }
+    .word-token.wrong { background: #ef4444; color: #fff; }
+
+    .typing-input {
+      width: 100%;
+      padding: clamp(6px, 0.95vh, 9px) 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9px;
+      background: #f8fafc;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .typing-input:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .keyboard-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(3px, 0.55vh, 5px);
+      background: #0f172a;
+      padding: clamp(6px, 1vh, 11px);
+      border-radius: 13px;
+      user-select: none;
+    }
+    .kb-row {
+      display: flex;
+      gap: clamp(3px, 0.38vw, 5px);
+      justify-content: center;
+    }
+    .key {
+      height: clamp(26px, 3.9vh, 37px);
+      min-width: clamp(26px, 2.4vw, 38px);
+      padding: 0 4px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: clamp(0.68rem, 1.15vh, 0.8rem);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      border-bottom: 3px solid rgba(0, 0, 0, 0.35);
+      position: relative;
+      transition: transform 0.08s, box-shadow 0.08s;
+    }
+    .key.w-space {
+      min-width: clamp(140px, 18vw, 230px);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+    .key[data-finger="LP"], .key[data-finger="RP"] { background: var(--f-pinky); }
+    .key[data-finger="LR"], .key[data-finger="RR"] { background: var(--f-ring); }
+    .key[data-finger="LM"], .key[data-finger="RM"] { background: var(--f-middle); }
+    .key[data-finger="LI"] { background: var(--f-index-l); }
+    .key[data-finger="RI"] { background: var(--f-index-r); }
+    .key[data-finger="TH"] { background: var(--f-thumb); }
+    .key.home-bump::after {
+      content: "";
+      width: 9px;
+      height: 2.5px;
+      background: rgba(255, 255, 255, 0.9);
+      position: absolute;
+      bottom: 4px;
+      border-radius: 2px;
+    }
+    .key.target-key {
+      outline: 3px solid #fde047;
+      transform: translateY(-2px) scale(1.05);
+      z-index: 5;
+      box-shadow: 0 4px 14px rgba(250, 204, 21, 0.55);
+      filter: brightness(1.15);
+    }
+    .key.pressed-wrong {
+      background: #dc2626 !important;
+      transform: translateY(2px);
+    }
+
+    .hands-bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: clamp(3px, 0.55vh, 6px) 10px;
+    }
+    .hand-mini {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .hand-label {
+      font-size: 0.66rem;
+      font-weight: 800;
+      color: var(--text-sub);
+      text-transform: uppercase;
+    }
+    .hand-svg {
+      width: clamp(92px, 10vw, 134px);
+      height: clamp(48px, 6.8vh, 72px);
+    }
+    .finger-shape {
+      opacity: 0.22;
+      transition: 0.15s;
+      stroke: #0f172a;
+      stroke-width: 1.5px;
+    }
+    .finger-shape.active-finger {
+      opacity: 1;
+      transform: translateY(-5px);
+      stroke-width: 2.5px;
+    }
+    .legend-compact {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      max-width: 260px;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 99px;
+      background: #fff;
+      border: 1px solid var(--border);
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    /* CỘT PHẢI: HỒ SƠ LUYỆN TẬP, GÓI ĐĂNG KÝ & QUẢNG CÁO TÍNH NĂNG */
+    .sales-rail {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: clamp(5px, 0.85vh, 8px);
+      min-height: 0;
+    }
+    .user-cloud-card {
+      background: #ffffff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 15px;
+      padding: clamp(8px, 1.1vh, 11px) 11px;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .uc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .uc-user {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .uc-sync-badge {
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 99px;
+      background: #dcfce7;
+      color: #15803d;
+      white-space: nowrap;
+    }
+    .uc-sync-badge.local {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .uc-plan-box {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 1px solid #93c5fd;
+      border-radius: 9px;
+      padding: 5px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .uc-plan-box.pro {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-color: #f59e0b;
+    }
+    .uc-plan-name {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #1e3a8a;
+    }
+    .uc-plan-box.pro .uc-plan-name {
+      color: #92400e;
+    }
+    .uc-plan-code {
+      font-size: 0.63rem;
+      font-weight: 700;
+      color: #1d4ed8;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+    .uc-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+    .uc-stat-cell {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 5px;
+      text-align: center;
+    }
+    .uc-stat-cell span {
+      display: block;
+      font-size: 0.6rem;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+    .uc-stat-cell strong {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 8px;
+    }
+    .history-table th, .history-table td {
+      padding: 7px 9px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .history-table th {
+      background: #f8fafc;
+      color: var(--text-sub);
+      font-weight: 800;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+    .offer-hero-card {
+      background: linear-gradient(150deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: clamp(10px, 1.4vh, 14px);
+      border: 1.5px solid rgba(245, 158, 11, 0.55);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(4px, 0.65vh, 7px);
+    }
+    .offer-badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .offer-pill {
+      background: #f59e0b;
+      color: #0f172a;
+      font-size: 0.64rem;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+    .offer-discount {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #34d399;
+    }
+    .offer-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #f8fafc;
+    }
+    .offer-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .offer-price-main {
+      font-size: clamp(1.3rem, 2.1vh, 1.6rem);
+      font-weight: 900;
+      color: #fbbf24;
+      line-height: 1;
+    }
+    .offer-price-old {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+    .offer-fomo-bar {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .offer-fomo-fill {
+      width: 84%;
+      height: 100%;
+      background: linear-gradient(90deg, #fbbf24, #ef4444);
+      border-radius: 99px;
+    }
+    .offer-fomo-text {
+      font-size: 0.65rem;
+      color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .perks-card {
+      flex: 1;
+      min-height: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: clamp(9px, 1.2vh, 13px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      overflow-y: auto;
+    }
+    .perks-heading {
+      font-size: 0.73rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+    }
+    .perk-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(4px, 0.75vh, 8px);
+    }
+    .perk-item {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      padding: 5px 8px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+    }
+    .perk-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .perk-text strong {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+    .perk-text span {
+      font-size: 0.67rem;
+      color: var(--text-sub);
+      line-height: 1.25;
+      display: block;
+      margin-top: 1px;
+    }
+
+    .testimonial-mini {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 11px;
+      padding: 7px 9px;
+      font-size: 0.68rem;
+      color: #166534;
+    }
+    .testimonial-mini strong {
+      display: block;
+      font-size: 0.71rem;
+      margin-bottom: 1px;
+      color: #14532d;
+    }
+
+    .bundle-upsell-card {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 1px solid #93c5fd;
+      border-radius: 11px;
+      padding: 7px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .bundle-upsell-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .bundle-upsell-card div strong {
+      display: block;
+      font-size: 0.73rem;
+      color: #1e3a8a;
+    }
+    .bundle-upsell-card div span {
+      font-size: 0.65rem;
+      color: #1d4ed8;
+    }
+    .bundle-upsell-price {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1180px) {
+      html, body { height: auto; overflow: auto; }
+      .workspace { grid-template-columns: 240px 1fr; }
+      .sales-rail {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 12px;
+      }
+    }
+    @media (max-width: 860px) {
+      .workspace { grid-template-columns: 1fr; }
+      .sidebar { max-height: 230px; }
+      .sales-rail { grid-template-columns: 1fr; }
+      .hands-bar { grid-template-columns: 1fr 1fr; }
+      .legend-compact { grid-column: 1 / -1; max-width: none; }
+    }
+
+    /* MODAL BÁN HÀNG */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 14px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 20px;
+      max-width: 660px;
+      width: 100%;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+      overflow: hidden;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    .modal-head {
+      background: #0f172a;
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h3 { font-size: 1rem; color: #fbbf24; font-weight: 800; }
+    .close-btn { background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; }
+    .close-btn:hover { color: #fff; }
+    .modal-body { padding: 20px; }
+    .pay-grid { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 16px; align-items: center; }
+    @media (max-width: 600px) { .pay-grid { grid-template-columns: 1fr; } }
+    .price-tag { font-size: 1.75rem; font-weight: 900; color: #dc2626; margin: 4px 0 8px; }
+    .price-old { font-size: 0.9rem; color: #64748b; text-decoration: line-through; margin-left: 8px; font-weight: 500; }
+    .qr-card { background: #f8fafc; border: 1.5px dashed #94a3b8; border-radius: 12px; padding: 12px; text-align: center; }
+    .qr-box { width: 140px; height: 140px; margin: 6px auto; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; }
+    .diag-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; display: none; }
+  </style>
+</head>
+<body>
+
+<!-- 1 THANH HEADER DUY NHẤT -->
+<header class="unified-topbar">
+  <div class="topbar-left">
+    <a href="../" class="back-hub-link" title="Quay về Kho phần mềm NTLab">← Kho phần mềm</a>
+    <div class="brand-title">
+      <span>⌨️ Tập Gõ Máy Tính</span>
+      <span class="badge-hot">15 Ngày · AI Sáng Tạo</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <select id="sound-select" class="select-sound" aria-label="Chọn âm thanh bàn phím">
+      <option value="thock">🔊 Phím cơ Thocky (Êm trầm)</option>
+      <option value="blue">🔊 Phím cơ Blue Switch (Tách tách)</option>
+      <option value="mute">🔇 Tắt âm</option>
+    </select>
+    <button type="button" class="btn btn-ghost" onclick="openProfileModal()">📊 Hồ Sơ & Gói ĐK</button>
+    <button type="button" class="btn btn-ghost" onclick="exportSpeedCard()">📸 Thẻ Tốc Độ</button>
+    <button type="button" class="btn btn-pro" id="btn-top-unlock" onclick="openPayModal()">🔓 Mở khóa 15 Ngày · 39k</button>
+    <button type="button" class="btn btn-ghost" id="btn-google-login" onclick="handleGoogleLogin()">☁️ Đăng nhập Google</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <!-- CỘT TRÁI: BANNER HOOK + LỘ TRÌNH 15 NGÀY + CAM KẾT -->
+  <aside class="sidebar">
+    <div class="left-hook-banner">
+      <span class="left-hook-tag">🔥 LỘ TRÌNH KHOA HỌC 15 NGÀY</span>
+      <h2>Cai nhìn bàn phím chỉ với 15 phút mỗi ngày</h2>
+      <p>Bài tập dài thực chiến + AI tạo đoạn văn vô tận</p>
+    </div>
+
+    <div class="day-list" id="day-list"></div>
+
+    <div class="left-guarantee-box">
+      <strong>⚡ Chỉ 39.000đ (= 1 ly trà sữa)</strong>
+      <span>Mở khóa vĩnh viễn 15 Ngày + AI Tạo Bài Gõ không giới hạn!</span>
+      <button type="button" class="btn btn-pro" style="width:100%;justify-content:center;margin-top:2px;" onclick="openPayModal()">
+        🔓 Mở Khóa Full 15 Ngày Ngay
+      </button>
+    </div>
+  </aside>
+
+  <!-- CỘT GIỮA: KHÔNG GIAN TẬP GÕ TRỌN 1 MÀN HÌNH -->
+  <main class="stage">
+    <!-- Thanh chuyển chế độ + Đồng hồ 15 phút/ngày -->
+    <div class="mode-switcher-row">
+      <div class="mode-tabs" role="tablist">
+        <button type="button" class="mode-tab active" id="tab-course" onclick="switchPracticeMode('course')">📚 Lộ trình 15 Ngày</button>
+        <button type="button" class="mode-tab ai-tab" id="tab-ai" onclick="switchPracticeMode('ai')">✨ AI Tạo Bài Gõ (Email / Nhạc / Truyện)</button>
+        <button type="button" class="mode-tab" id="tab-custom" onclick="switchPracticeMode('custom')">📝 Tự Dán Văn Bản</button>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-pill timer-pill" title="Thời gian bạn đã gõ trong hôm nay">⏱️ Hôm nay <strong id="st-daily-time">00:00</strong>/15:00</div>
+        <div class="stat-pill">Tốc độ <strong id="st-wpm">0</strong> WPM</div>
+        <div class="stat-pill">Chính xác <strong id="st-acc">100%</strong></div>
+        <div class="stat-pill">Tiến độ <strong id="st-prog">0%</strong></div>
+        <button type="button" class="btn btn-ghost" style="background:#f1f5f9;color:#0f172a;border-color:#cbd5e1;padding:4px 9px;" onclick="resetExercise()">↻ Làm lại</button>
+      </div>
+    </div>
+
+    <!-- Thanh công cụ AI Tạo Bài Gõ (Hiện khi chọn tab AI) -->
+    <div class="ai-toolbar" id="ai-toolbar">
+      <div class="ai-presets">
+        <button type="button" class="ai-chip active" data-topic="email" onclick="generateAiExercise('email')">📧 Email Công Sở</button>
+        <button type="button" class="ai-chip" data-topic="music" onclick="generateAiExercise('music')">🎵 Lời Ca Khúc & Thơ</button>
+        <button type="button" class="ai-chip" data-topic="humor" onclick="generateAiExercise('humor')">😂 Truyện Cười Xả Stress</button>
+        <button type="button" class="ai-chip" data-topic="kids" onclick="generateAiExercise('kids')">🧚 Cổ Tích Cho Bé</button>
+      </div>
+      <div class="ai-custom-prompt">
+        <input type="text" id="ai-prompt-input" placeholder="Hoặc nhập chủ đề bất kỳ (VD: Email xin sếp nghỉ phép đi Đà Lạt)..." />
+        <button type="button" class="btn btn-ai" id="btn-ai-gen" onclick="generateAiFromInput()">✨ Tạo Bài Mới</button>
+        <button type="button" class="btn btn-ghost" style="background:#fff;color:#475569;border-color:#cbd5e1;padding:4px 8px;" onclick="configureGeminiKey()" title="Cài đặt Google Gemini API Key miễn phí">⚙️ Key AI</button>
+      </div>
+    </div>
+
+    <!-- Thanh công cụ Tự dán văn bản (Hiện khi chọn tab Tự Dán Văn Bản) -->
+    <div class="custom-text-toolbar" id="custom-toolbar">
+      <input type="text" id="custom-text-input" placeholder="Dán đoạn văn bản tài liệu, bài học thuộc lòng hoặc lời bài hát bạn muốn luyện gõ vào đây..." />
+      <button type="button" class="btn btn-pro" onclick="applyCustomText()">Áp dụng bài gõ</button>
+    </div>
+
+    <div class="sub-and-guide">
+      <div>
+        <span class="day-kicker" id="day-label" style="margin-right:8px;">PHỄU TRẢI NGHIỆM</span>
+        <strong class="lesson-main-title" id="lesson-title" style="font-size:0.92rem;">Bài Test bắt bệnh "Mổ cò"</strong>
+        <div class="sub-lessons" id="sub-lessons" style="margin-top:4px;"></div>
+      </div>
+      <div class="finger-guide-pill">
+        <span>Phím: <strong class="next-key-badge" id="next-key-box">F</strong></span>
+        <span id="finger-text">👉 Ngón trỏ trái</span>
+        <span class="telex-hint" id="telex-hint">💡 Đặt 2 ngón trỏ vào F và J</span>
+      </div>
+    </div>
+
+    <div class="typing-zone">
+      <div class="prompt-box" id="prompt-box"></div>
+      <input type="text" id="vn-input" class="typing-input" placeholder="Gõ trực tiếp trên bàn phím (hoặc nhập tiếng Việt có dấu ở bài câu)..." autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="keyboard-wrap" id="keyboard"></div>
+
+    <div class="hands-bar">
+      <div class="hand-mini">
+        <span class="hand-label">Tay trái</span>
+        <svg class="hand-svg" viewBox="0 0 220 130">
+          <rect x="45" y="70" width="115" height="55" rx="22" fill="#cbd5e1" />
+          <rect id="f-LP" class="finger-shape" x="20" y="32" width="22" height="52" rx="11" fill="#f43f5e" />
+          <rect id="f-LR" class="finger-shape" x="50" y="16" width="24" height="65" rx="12" fill="#f97316" />
+          <rect id="f-LM" class="finger-shape" x="82" y="8" width="25" height="72" rx="12" fill="#10b981" />
+          <rect id="f-LI" class="finger-shape" x="115" y="18" width="25" height="62" rx="12" fill="#3b82f6" />
+          <rect id="f-TH-L" class="finger-shape" x="152" y="52" width="42" height="24" rx="12" fill="#0d9488" />
+        </svg>
+      </div>
+
+      <div class="legend-compact">
+        <span class="legend-item"><i class="dot" style="background:var(--f-pinky)"></i>Út</span>
+        <span class="legend-item"><i class="dot" style="background:var(--f-ring)"></i>Áp út</span>
+        <span class="legend-item"><i class="dot" style="background:var(--f-middle)"></i>Giữa</span>
+        <span class="legend-item"><i class="dot" style="background:var(--f-index-l)"></i>Trỏ trái</span>
+        <span class="legend-item"><i class="dot" style="background:var(--f-index-r)"></i>Trỏ phải</span>
+        <span class="legend-item"><i class="dot" style="background:var(--f-thumb)"></i>Cái (Cách)</span>
+      </div>
+
+      <div class="hand-mini">
+        <svg class="hand-svg" viewBox="0 0 220 130">
+          <rect x="60" y="70" width="115" height="55" rx="22" fill="#cbd5e1" />
+          <rect id="f-TH-R" class="finger-shape" x="26" y="52" width="42" height="24" rx="12" fill="#0d9488" />
+          <rect id="f-RI" class="finger-shape" x="80" y="18" width="25" height="62" rx="12" fill="#8b5cf6" />
+          <rect id="f-RM" class="finger-shape" x="113" y="8" width="25" height="72" rx="12" fill="#10b981" />
+          <rect id="f-RR" class="finger-shape" x="145" y="16" width="24" height="65" rx="12" fill="#f97316" />
+          <rect id="f-RP" class="finger-shape" x="175" y="32" width="22" height="52" rx="11" fill="#f43f5e" />
+        </svg>
+        <span class="hand-label">Tay phải</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- CỘT PHẢI: HỒ SƠ LUYỆN TẬP ĐÃ LƯU, GÓI ĐĂNG KÝ & QUẢNG CÁO TÍNH NĂNG -->
+  <aside class="sales-rail" aria-label="Hồ sơ luyện tập và Quyền lợi gói Pro">
+    <!-- THẺ HỒ SƠ LUYỆN TẬP & GÓI ĐĂNG KÝ (HIỂN THỊ TRỰC TIẾP) -->
+    <div class="user-cloud-card">
+      <div class="uc-top">
+        <span class="uc-user" id="uc-user-label">👤 Khách (Chưa đăng nhập)</span>
+        <span class="uc-sync-badge local" id="uc-sync-badge">⚪ Lưu trên máy</span>
+      </div>
+      <div class="uc-plan-box" id="uc-plan-box">
+        <span class="uc-plan-name" id="uc-plan-name">🎁 Gói Miễn Phí (3 Ngày đầu)</span>
+        <span class="uc-plan-code" id="uc-plan-code">Chưa kích hoạt mã</span>
+      </div>
+      <div class="uc-stats-grid">
+        <div class="uc-stat-cell">
+          <span>Đã hoàn thành</span>
+          <strong id="uc-done-count">0/48 bài</strong>
+        </div>
+        <div class="uc-stat-cell">
+          <span>Kỷ lục WPM</span>
+          <strong id="uc-best-wpm">0 WPM</strong>
+        </div>
+        <div class="uc-stat-cell">
+          <span>Lượt đã lưu</span>
+          <strong id="uc-total-runs">0 lần</strong>
+        </div>
+      </div>
+      <button type="button" class="btn btn-ghost" style="width:100%;justify-content:center;background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;padding:5px 8px;font-size:0.72rem;" onclick="openProfileModal()">
+        📊 Xem Lịch Sử Luyện Tập & Quản Lý Gói
+      </button>
+    </div>
+
+    <div class="offer-hero-card">
+      <div class="offer-badge-row">
+        <span class="offer-pill">🔥 ƯU ĐÃI EARLY BIRD</span>
+        <span class="offer-discount">Tiết kiệm 80%</span>
+      </div>
+      <div class="offer-title">Làm chủ 10 ngón + AI Tạo Bài Gõ Vô Tận</div>
+      <div class="offer-price-row">
+        <span class="offer-price-main">39.000đ</span>
+        <span class="offer-price-old">199.000đ</span>
+      </div>
+      <div class="offer-fomo-bar"><div class="offer-fomo-fill"></div></div>
+      <div class="offer-fomo-text">
+        <span>⚡ Đã mở khóa: 842/1.000 suất</span>
+        <span>Còn 158 suất</span>
+      </div>
+      <button type="button" class="btn btn-pro" style="width:100%;justify-content:center;padding:8px;" onclick="openPayModal()">
+        🚀 Mở Khóa Ngay · 39.000đ
+      </button>
+    </div>
+
+    <div class="perks-card">
+      <div class="perks-heading">✨ Đặc quyền chỉ có trong bản Pro</div>
+
+      <div class="perk-list">
+        <div class="perk-item">
+          <div class="perk-icon">🤖</div>
+          <div class="perk-text">
+            <strong>AI Tạo Bài Gõ Email, Nhạc & Truyện</strong>
+            <span>Tự động sinh bài luyện theo đúng chủ đề bạn thích bằng Google Gemini AI.</span>
+          </div>
+        </div>
+
+        <div class="perk-item">
+          <div class="perk-icon">🎯</div>
+          <div class="perk-text">
+            <strong>Trọn bộ 15 Ngày · Bài tập dài thực chiến</strong>
+            <span>Xóa sổ tật mổ cò 2 ngón, mắt nhìn màn hình tay tự phản xạ 65+ WPM.</span>
+          </div>
+        </div>
+
+        <div class="perk-item">
+          <div class="perk-icon">📝</div>
+          <div class="perk-text">
+            <strong>Dán Văn Bản Bất Kỳ Để Luyện & Học Thuộc</strong>
+            <span>Dán tài liệu công ty hoặc bài học của con vào để vừa luyện 10 ngón vừa nhớ bài.</span>
+          </div>
+        </div>
+
+        <div class="perk-item">
+          <div class="perk-icon">☁️</div>
+          <div class="perk-text">
+            <strong>Đồng bộ Google Cloud trọn đời</strong>
+            <span>Mua 1 lần, đăng nhập Gmail học trên mọi máy tính ở nhà và văn phòng.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-mini">
+        <strong>⭐⭐⭐⭐⭐ "Chế độ AI tạo Email quá đỉnh!"</strong>
+        "Mỗi sáng mình bật chế độ AI tạo Email công sở gõ 15 phút, vừa dẻo tay vừa học được cách viết email chuyên nghiệp."
+      </div>
+
+      <div class="bundle-upsell-card" onclick="openPayModal()">
+        <div>
+          <strong>🌟 Gói All-in-One (Trọn bộ N App)</strong>
+          <span>Mở Tập Gõ + Màn Hình Desktop + App mới</span>
+        </div>
+        <span class="bundle-upsell-price">99k</span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- MODAL BÁN HÀNG & KÍCH HOẠT MÃ CLOUD FIRESTORE -->
+<div class="modal-backdrop" id="pay-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>⚡ MỞ KHÓA TẬP GÕ MÁY TÍNH PRO — CHỈ 39.000Đ</h3>
+      <button class="close-btn" onclick="closePayModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="diag-box" id="diag-box">
+        <strong style="color:#991b1b;" id="diag-title">🎯 Kết quả bắt bệnh đôi tay của bạn:</strong>
+        <p style="font-size:0.86rem;margin-top:4px;" id="diag-text"></p>
+      </div>
+      <div class="pay-grid">
+        <div>
+          <div style="font-size:0.8rem;font-weight:800;color:#15803d;">ƯU ĐÃI EARLY BIRD · MUA 1 LẦN DÙNG MÃI MÃI</div>
+          <div class="price-tag">39.000đ <span class="price-old">199.000đ</span></div>
+          <ul style="list-style:none;font-size:0.86rem;display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-weight:600;color:#334155;">
+            <li>✅ Mở khóa toàn bộ <strong>Ngày 4 đến Ngày 15</strong> (Bài luyện dài chuyên sâu)</li>
+            <li>✅ <strong>Mở khóa không giới hạn AI Tạo Bài Gõ</strong> (Email, Bài hát, Truyện cười, Cổ tích)</li>
+            <li>✅ Chế độ <strong>Tự dán văn bản bất kỳ</strong> để luyện gõ tài liệu riêng</li>
+            <li>✅ Hoặc chọn <strong>Gói Trọn Bộ 99.000đ</strong> mở khóa toàn bộ kho phần mềm NTLab</li>
+          </ul>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-pro" style="flex:1;justify-content:center;padding:10px;" onclick="unlockProDemo()">
+              ✨ Mở Khóa Thử Nghiệm (Demo)
+            </button>
+            <button class="btn btn-ghost" style="padding:10px;background:#f1f5f9;color:#0f172a;border-color:#cbd5e1;" onclick="exportSpeedCard()">
+              📸 Tải Thẻ Tốc Độ
+            </button>
+          </div>
+        </div>
+        <div class="qr-card">
+          <div style="font-weight:800;font-size:0.8rem;">QUÉT VIETQR TỰ ĐỘNG MỞ</div>
+          <div class="qr-box">MÃ VIETQR<br/>39.000 VNĐ<br/>(Hoặc 99k Trọn Bộ)</div>
+          <div style="font-size:0.74rem;color:#475569;">Nội dung CK: <strong>TAPGO</strong><br/>Mở khóa tức thì trong 3 giây</div>
+        </div>
+      </div>
+
+      <div class="ntlab-license-box" style="margin-top:16px;">
+        <label for="license-code-input">🔑 Đã có Mã Kích Hoạt? Nhập mã (GM-... hoặc ALL-...) để mở khóa & lưu lên Google Cloud:</label>
+        <div class="ntlab-license-row">
+          <input id="license-code-input" type="text" placeholder="Ví dụ: ALL-MJXSVK-W3XW hoặc GM-MTVZ6F-EWC8" autocomplete="off" spellcheck="false" />
+          <button type="button" class="btn btn-pro" onclick="handleActivateLicense()">Kích hoạt mã</button>
+        </div>
+        <div id="license-code-msg" class="ntlab-license-msg" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HỒ SƠ LUYỆN TẬP & GÓI ĐĂNG KÝ CLOUD -->
+<div class="modal-backdrop" id="profile-modal">
+  <div class="modal-box" style="max-width:740px;">
+    <div class="modal-head">
+      <h3>📊 HỒ SƠ LUYỆN TẬP & GÓI ĐĂNG KÝ (GOOGLE CLOUD)</h3>
+      <button class="close-btn" onclick="closeProfileModal()">×</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+      <!-- Khối 1: Tài khoản Google & Gói đăng ký -->
+      <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:14px;padding:14px;display:grid;grid-template-columns:1.2fr 1fr;gap:14px;align-items:center;">
+        <div>
+          <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">Tài khoản & Đồng bộ Cloud</div>
+          <div style="font-size:1rem;font-weight:800;color:#0f172a;margin-top:2px;" id="pm-account-name">👤 Khách (Chưa đăng nhập Google)</div>
+          <div style="font-size:0.78rem;color:#475569;margin-top:2px;" id="pm-sync-status">Đang lưu tạm trên trình duyệt này. Đăng nhập Google để lưu vĩnh viễn lên Firebase Cloud.</div>
+          <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-ai" id="pm-btn-sync" onclick="syncCloudNow()">🔄 Đồng bộ Cloud ngay</button>
+            <button type="button" class="btn btn-ghost" style="background:#fff;color:#0f172a;border-color:#cbd5e1;" id="pm-btn-auth" onclick="handleAuthFromModal()">☁️ Đăng nhập Google</button>
+          </div>
+        </div>
+        <div style="background:#fff;border:1.5px solid #bfdbfe;border-radius:12px;padding:12px;">
+          <div style="font-size:0.7rem;font-weight:800;color:#1d4ed8;text-transform:uppercase;">Gói đăng ký hiện tại</div>
+          <div style="font-size:0.95rem;font-weight:900;color:#0f172a;margin-top:3px;" id="pm-plan-title">🎁 Gói Miễn Phí (3 Ngày đầu)</div>
+          <div style="font-size:0.75rem;color:#475569;margin-top:3px;" id="pm-plan-codes">Mã đã kích hoạt: Chưa có</div>
+          <button type="button" class="btn btn-pro" style="width:100%;justify-content:center;margin-top:8px;" onclick="closeProfileModal(); openPayModal();">
+            🔑 Nâng Cấp Pro / Nhập Mã Kích Hoạt
+          </button>
+        </div>
+      </div>
+
+      <!-- Khối 2: 4 Chỉ số thống kê luyện tập đã lưu -->
+      <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:10px;">
+        <div class="uc-stat-cell" style="padding:10px;">
+          <span>Bài học hoàn thành</span>
+          <strong style="font-size:1.15rem;color:#2563eb;" id="pm-stat-lessons">0 / 48</strong>
+        </div>
+        <div class="uc-stat-cell" style="padding:10px;">
+          <span>Kỷ lục tốc độ</span>
+          <strong style="font-size:1.15rem;color:#16a34a;" id="pm-stat-best">0 WPM</strong>
+        </div>
+        <div class="uc-stat-cell" style="padding:10px;">
+          <span>Độ chính xác TB</span>
+          <strong style="font-size:1.15rem;color:#d97706;" id="pm-stat-acc">100%</strong>
+        </div>
+        <div class="uc-stat-cell" style="padding:10px;">
+          <span>Thời gian hôm nay</span>
+          <strong style="font-size:1.15rem;color:#7c3aed;" id="pm-stat-time">00:00 / 15:00</strong>
+        </div>
+      </div>
+
+      <!-- Khối 3: Bảng lịch sử các lần luyện tập gần đây -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <strong style="font-size:0.86rem;color:#0f172a;">📜 Lịch sử các bài đã luyện gần đây (Tự động lưu Local + Firebase Cloud)</strong>
+          <span style="font-size:0.74rem;color:#64748b;" id="pm-total-runs-label">Tổng: 0 lượt</span>
+        </div>
+        <div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;margin-top:6px;">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Thời gian</th>
+                <th>Bài luyện / Chủ đề</th>
+                <th>Tốc độ</th>
+                <th>Chính xác</th>
+                <th>Thời lượng</th>
+              </tr>
+            </thead>
+            <tbody id="pm-history-tbody">
+              <tr><td colspan="5" style="text-align:center;color:#64748b;padding:16px;">Chưa có lượt luyện tập nào được lưu. Hãy gõ xong 1 bài ngắn để hệ thống ghi nhận nhé!</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let audioCtx = null;
+  function playKeySound(isError = false) {
+    const mode = document.getElementById("sound-select").value;
+    if (mode === "mute") return;
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (isError) {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(150, now);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.start(now); osc.stop(now + 0.12);
+    } else if (mode === "blue") {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1200, now);
+      osc.frequency.exponentialRampToValueAtTime(280, now + 0.045);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+      osc.start(now); osc.stop(now + 0.045);
+    } else {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(90, now + 0.06);
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+      osc.start(now); osc.stop(now + 0.06);
+    }
+  }
+
+  const KB_ROWS = [
+    [{k:"`",f:"LP"},{k:"1",f:"LP"},{k:"2",f:"LR"},{k:"3",f:"LM"},{k:"4",f:"LI"},{k:"5",f:"LI"},{k:"6",f:"RI"},{k:"7",f:"RI"},{k:"8",f:"RM"},{k:"9",f:"RR"},{k:"0",f:"RP"},{k:"-",f:"RP"},{k:"=",f:"RP"}],
+    [{k:"Q",f:"LP"},{k:"W",f:"LR"},{k:"E",f:"LM"},{k:"R",f:"LI"},{k:"T",f:"LI"},{k:"Y",f:"RI"},{k:"U",f:"RI"},{k:"I",f:"RM"},{k:"O",f:"RR"},{k:"P",f:"RP"},{k:"[",f:"RP"},{k:"]",f:"RP"}],
+    [{k:"A",f:"LP"},{k:"S",f:"LR"},{k:"D",f:"LM"},{k:"F",f:"LI",bump:true},{k:"G",f:"LI"},{k:"H",f:"RI"},{k:"J",f:"RI",bump:true},{k:"K",f:"RM"},{k:"L",f:"RR"},{k:";",f:"RP"},{k:"'",f:"RP"}],
+    [{k:"Z",f:"LP"},{k:"X",f:"LR"},{k:"C",f:"LM"},{k:"V",f:"LI"},{k:"B",f:"LI"},{k:"N",f:"RI"},{k:"M",f:"RI"},{k:",",f:"RM"},{k:".",f:"RR"},{k:"/",f:"RP"}],
+    [{k:" ",label:"DẤU CÁCH (NGÓN CÁI)",f:"TH",cls:"w-space"}]
+  ];
+
+  const FINGER_NAMES = {
+    LP: "Ngón út trái", LR: "Ngón áp út trái", LM: "Ngón giữa trái", LI: "Ngón trỏ trái",
+    RI: "Ngón trỏ phải", RM: "Ngón giữa phải", RR: "Ngón áp út phải", RP: "Ngón út phải",
+    TH: "Ngón cái (trái/phải)"
+  };
+
+  const VN_BASE_MAP = {
+    "ă":"a","â":"a","á":"a","à":"a","ả":"a","ã":"a","ạ":"a","ắ":"a","ằ":"a","ẳ":"a","ẵ":"a","ặ":"a","ấ":"a","ầ":"a","ẩ":"a","ẫ":"a","ậ":"a",
+    "ê":"e","é":"e","è":"e","ẻ":"e","ẽ":"e","ẹ":"e","ế":"e","ề":"e","ể":"e","ễ":"e","ệ":"e",
+    "ô":"o","ơ":"o","ó":"o","ò":"o","ỏ":"o","õ":"o","ọ":"o","ố":"o","ồ":"o","ổ":"o","ỗ":"o","ộ":"o","ớ":"o","ờ":"o","ở":"o","ỡ":"o","ợ":"o",
+    "ư":"u","ú":"u","ù":"u","ủ":"u","ũ":"u","ụ":"u","ứ":"u","ừ":"u","ử":"u","ữ":"u","ự":"u",
+    "í":"i","ì":"i","ỉ":"i","ĩ":"i","ị":"i","ý":"y","ỳ":"y","ỷ":"y","ỹ":"y","ỵ":"y","đ":"d"
+  };
+
+  // KHO MẪU SINH BÀI TỰ ĐỘNG THÔNG MINH (Tức thì 0ms + Hỗ trợ gọi Google Gemini Free API)
+  const AI_SMART_POOLS = {
+    email: {
+      openers: [
+        "Kính gửi anh chị trong ban dự án, em xin phép gửi báo cáo tổng hợp tiến độ công việc của tuần này để mọi người cùng nắm thông tin.",
+        "Chào anh Minh, cảm ơn anh đã dành thời gian trao đổi cùng nhóm em trong buổi họp sáng nay về kế hoạch ra mắt sản phẩm mới.",
+        "Thưa chị Lan, em viết thư này để xin phép nghỉ phép hai ngày cuối tuần tới nhằm giải quyết công việc gia đình tại quê nhà.",
+        "Chào cả nhóm, mình vừa cập nhật lại bảng phân công nhiệm vụ tháng mười một theo đúng góp ý của khách hàng trong buổi nghiệm thu."
+      ],
+      middles: [
+        "Tất cả các hạng mục quan trọng đều đã hoàn thành đúng hạn và sẵn sàng chuyển sang giai đoạn kiểm thử chất lượng trước khi bàn giao.",
+        "Trong thời gian vắng mặt, em đã bàn giao toàn bộ hồ sơ khách hàng cho bạn Hương phụ trách để đảm bảo tiến độ chung không bị gián đoạn.",
+        "Nếu anh chị có bất kỳ câu hỏi hoặc đề xuất điều chỉnh nào, xin vui lòng phản hồi lại trước chiều thứ Sáu để em kịp thời bổ sung.",
+        "Mình rất mong nhận được sự phối hợp nhịp nhàng của các phòng ban để dự án quý này đạt kết quả vượt mức kỳ vọng ban đầu."
+      ]
+    },
+    music: {
+      openers: [
+        "Chiều hoàng hôn buông xuống mặt hồ lấp lánh, từng cơn gió nhẹ mang theo hương hoa sữa nồng nàn khắp những con phố thân quen.",
+        "Đường dài tương lai quê hương đang gọi mời, tuổi trẻ hôm nay cùng nhau bước tới với bao ước mơ xanh tươi trên môi cười.",
+        "Hạt mưa rơi tí tách bên hiên nhà vắng, gợi nhớ biết bao kỷ niệm êm đềm của những tháng năm học trò dưới mái trường xưa.",
+        "Nắng sớm mai nhẹ nhàng đánh thức chồi non xanh biếc, đàn chim én chao nghiêng báo hiệu một mùa xuân ấm áp đang về khắp muôn nơi."
+      ],
+      middles: [
+        "Dù mai sau đi khắp phương trời xa lạ, lòng vẫn nhớ mãi tiếng đàn dịu êm và những lời ca ngân vang trong chiều thu năm ấy.",
+        "Hãy giữ mãi ngọn lửa nhiệt huyết trong tim mình, để mỗi bước chân đi qua đều in dấu những tháng ngày rực rỡ và đáng tự hào nhất.",
+        "Từng giai điệu ngọt ngào như cơn mưa tưới mát tâm hồn, xua tan đi bao mệt mỏi bộn bề của những ngày làm việc vất vả."
+      ]
+    },
+    humor: {
+      openers: [
+        "Sáng thứ Hai đầu tuần, chiếc đồng hồ báo thức kêu vang inh ỏi nhưng đôi mắt vẫn kiên quyết nhắm chặt vì đang bận mơ trúng số độc đắc.",
+        "Đi làm văn phòng sợ nhất không phải là sếp giao thêm việc, mà là câu hỏi kinh điển trưa nay cả phòng mình ăn món gì bây giờ.",
+        "Quyết tâm giảm cân từ đầu tháng Giêng nhưng cứ đến bốn giờ chiều là mùi trà sữa trân châu đường đen lại quyến rũ không lối thoát.",
+        "Lúc nhỏ cứ tưởng lớn lên đi làm sẽ có nhiều tiền tiêu thoải mái, ai ngờ lớn lên mới biết tiền lương chỉ ghé thăm tài khoản đúng năm phút."
+      ],
+      middles: [
+        "Thế mới biết kỹ năng gõ mười ngón quan trọng đến nhường nào, ít nhất khi sếp đi ngang qua cũng nghe tiếng bàn phím kêu lách cách cực kỳ chăm chỉ.",
+        "Bởi vậy mỗi ngày dành mười lăm phút luyện gõ phím cơ vừa giúp giải tỏa căng thẳng vừa giúp trả lời tin nhắn đặt đồ ăn nhanh gấp đôi đồng nghiệp."
+      ]
+    },
+    kids: {
+      openers: [
+        "Ngày xửa ngày xưa, ở một khu rừng xanh mát có chú thỏ trắng rất chăm chỉ đọc sách và thích trồng những luống cà rốt ngọt lành.",
+        "Mỗi sáng thức dậy, bé Mai đều tự giác gấp chăn màn gọn gàng, đánh răng rửa mặt thật sạch rồi vui vẻ ăn sáng cùng bố mẹ trước khi tới lớp.",
+        "Trên bầu trời đêm đầy sao sáng, chị Hằng Nga và chú Cuội đang mỉm cười nhìn các bạn nhỏ dưới trần gian vui rước đèn ông sao.",
+        "Chú kiến nhỏ tha từng hạt gạo về tổ trước khi cơn mưa mùa hạ kéo đến, dạy cho chúng ta bài học quý giá về lòng kiên trì và tinh thần đoàn kết."
+      ],
+      middles: [
+        "Nhờ chăm chỉ rèn luyện đôi bàn tay mỗi ngày, các bạn nhỏ không chỉ viết chữ đẹp hơn mà còn gõ máy tính nhanh thoăn thoắt để tìm hiểu thế giới kỳ thú.",
+        "Bố mẹ và thầy cô đều rất vui mừng khi thấy em ngày càng tự tin, ngoan ngoãn và biết giúp đỡ mọi người xung quanh từ những việc nhỏ nhất."
+      ]
+    }
+  };
+
+  // LỘ TRÌNH 15 NGÀY ĐÃ ĐƯỢC MỞ RỘNG ĐỘ DÀI & ĐỦ 3 BÀI MỖI NGÀY
+  const CURRICULUM = [
+    {
+      id: 0, tag: "⚡ THỬ NGAY 20S", title: "Test bắt bệnh Mổ Cò & Cảm nhận phím cơ", desc: "Gõ thử câu ngắn đo tốc độ & nghe tiếng phím", free: true, hook: true,
+      lessons: [
+        { name: "1. Sửa tật mổ cò 15s", mode: "key", hint: "Gõ các chữ có nghĩa trên 1 hàng phím", text: "da ga ha la sa da ga ha la sa fa da ga ha la sa" },
+        { name: "2. Ghép dấu Telex", mode: "key", hint: "Kết hợp phím f (huyền), s (sắc), j (nặng)", text: "laf las laj gaf gas gaj daf das daj haf has haj" },
+        { name: "3. Câu Tiếng Việt", mode: "vn", hint: "Bật UniKey và gõ câu dưới, nhấn Cách chốt từ", text: "Mỗi ngày mười lăm phút luyện gõ mười ngón giúp đôi tay lướt nhẹ trên bàn phím thật êm" }
+      ]
+    },
+    {
+      id: 1, tag: "NGÀY 1", title: "Định vị F, J & Phá bỏ thói quen nhìn phím", desc: "Làm quen 2 phím có gai định vị F, J", free: true,
+      lessons: [
+        { name: "Bài 1: Phím F & J", mode: "key", hint: "Cảm nhận gai nhỏ trên phím F và J", text: "f j f j ff jj fjf jfj fff jjj fj fj jf jf ffjj jjff fjf jfj" },
+        { name: "Bài 2: Thêm D & K", mode: "key", hint: "Ngón giữa trái bấm D, giữa phải bấm K", text: "d k d k fd jk df kj fjdk dkjf dfjk kjfd ddkk ffjj fjdk dfkj" },
+        { name: "Bài 3: Từ ngắn hàng giữa", mode: "key", hint: "Gõ nhịp nhàng kết hợp dấu cách", text: "da ka fa ja dad kak faf jaj fada jaka dafa kaja dad kak faf" }
+      ]
+    },
+    {
+      id: 2, tag: "NGÀY 2", title: "Làm chủ Hàng Phím Cơ Sở (A S D F - J K L ;)", desc: "Mở rộng ra ngón áp út và ngón út", free: true,
+      lessons: [
+        { name: "Bài 1: Phím S & L", mode: "key", hint: "Áp út trái bấm S, áp út phải bấm L", text: "s l s l asd jkl sds lkl fds jkl asdf jkl; fdsa ;lkj sad lad" },
+        { name: "Bài 2: Phím A, G, H", mode: "key", hint: "Trỏ trái vươn sang G, trỏ phải sang H", text: "a g h a g h ga ha la sa da kha nha gala haha sasa dada fafa" },
+        { name: "Bài 3: Câu dài hàng giữa", mode: "key", hint: "Giữ cổ tay thẳng và đều nhịp", text: "da ga ha la sa kha nha la da ga ha sa la kha nha da ga ha la" }
+      ]
+    },
+    {
+      id: 3, tag: "NGÀY 3", title: "Gõ 20 từ Tiếng Việt đầu tiên (Telex cơ bản)", desc: "Ghép dấu Sắc (s), Huyền (f), Nặng (j)", free: true,
+      lessons: [
+        { name: "Bài 1: Huyền (f) & Sắc (s)", mode: "key", hint: "Ví dụ: la + f = là, ga + s = gá", text: "laf las daf das haf has nhaf nhas gaf gas saf sas khaf khas" },
+        { name: "Bài 2: Gõ từ có dấu", mode: "vn", hint: "Bật bộ gõ tiếng Việt, gõ đúng từng từ", text: "nhà ga lá đa cá cảnh hà lan khá giả thật thà nhàn nhã" },
+        { name: "Bài 3: Câu tiếng Việt ngắn", mode: "vn", hint: "Mắt nhìn màn hình, không cúi nhìn phím", text: "Cả nhà cùng ra sân ngắm những nhành hoa lan nở thật đẹp" }
+      ]
+    },
+    {
+      id: 4, tag: "NGÀY 4", title: "Chinh phục Hàng Phím Trên (E, R, T, U, I, O)", desc: "Vươn ngón lên hàng trên không nhấc cổ tay", free: false,
+      lessons: [
+        { name: "Bài 1: Phím E & I", mode: "key", hint: "Ngón giữa vươn lên E và I rồi thu về D, K", text: "de ki ed ik ded kik fe ji ef ij de ki ed ik tre tri me mi" },
+        { name: "Bài 2: Phím R, T, U, O", mode: "key", hint: "Ngón trỏ vươn lên R T và U", text: "fr ft juuf ruru tutu fufu juju ro to ru tu tre tro thu" },
+        { name: "Bài 3: Câu luyện hàng trên", mode: "vn", hint: "Phối hợp hàng cơ sở và hàng trên", text: "Buổi sáng tinh mơ trên những cành cây cao có tiếng chim hót líu lo thật vui tai" }
+      ]
+    },
+    {
+      id: 5, tag: "NGÀY 5", title: "Hoàn thiện Hàng Phím Trên (Q, W, Y, P)", desc: "Luyện ngón út và áp út hàng trên", free: false,
+      lessons: [
+        { name: "Bài 1: Phím Q, W, O, P", mode: "key", hint: "Ngón út và áp út vươn lên Q, W, O, P", text: "aq sw lo ;p qa ws ol p; qua qua pho pho quyen luyen" },
+        { name: "Bài 2: Cụm từ mở rộng", mode: "vn", hint: "Luyện phản xạ ngón út và áp út", text: "quê hương yêu quý phố phường nhộn nhịp mùa thu qua mau" },
+        { name: "Bài 3: Đoạn văn ngắn", mode: "vn", hint: "Giữ nhịp thở đều và thả lỏng hai vai", text: "Mỗi khi đi qua con phố nhỏ thân quen lòng tôi lại bồi hồi nhớ về những kỷ niệm êm đềm" }
+      ]
+    },
+    {
+      id: 6, tag: "NGÀY 6", title: "Tuyệt chiêu Mũ Tiếng Việt (ă, â, ê, ô, ơ, ư, đ)", desc: "Gõ gấp đôi phím aa, ee, oo, dd và phím w", free: false,
+      lessons: [
+        { name: "Bài 1: Chuỗi Telex mũ", mode: "key", hint: "aa=â, ee=ê, oo=ô, dd=đ, uw=ư, ow=ơ", text: "aa ee oo dd uw ow aw aaw dda ddee ddoo uowm thuowng" },
+        { name: "Bài 2: Từ ghép có dấu mũ", mode: "vn", hint: "Gõ dứt khoát hai phím liền nhau", text: "cây đa đêm trăng mùa đông quê hương ước mơ vươn lên" },
+        { name: "Bài 3: Câu thực hành dấu mũ", mode: "vn", hint: "Luyện ghép vần ươ, iê, uô chuẩn xác", text: "Con đường làng quanh co dưới ánh trăng rằm trông thật nên thơ và bình yên biết bao" }
+      ]
+    },
+    {
+      id: 7, tag: "NGÀY 7", title: "Làm chủ Hàng Phím Dưới (Z, X, C, V, B, N, M)", desc: "Thu ngón xuống hàng dưới chuẩn xác", free: false,
+      lessons: [
+        { name: "Bài 1: Phím V, B, N, M", mode: "key", hint: "Trỏ trái bấm V B, trỏ phải bấm N M", text: "fv gb jn hm vf bg nj mh va ba na ma nam ban van minh" },
+        { name: "Bài 2: Phím Z, X, C", mode: "key", hint: "Út, áp út, giữa trái thu xuống Z, X, C", text: "az sx dc za xs cd xa ca xanh xao chăm chỉ chính xác" },
+        { name: "Bài 3: Tổng hợp 3 hàng phím", mode: "vn", hint: "Đôi tay di chuyển linh hoạt cả 3 hàng", text: "Những cánh buồm nâu căng gió vươn mình ra khơi xa đón ánh nắng bình minh rực rỡ" }
+      ]
+    },
+    {
+      id: 8, tag: "NGÀY 8", title: "Phối hợp 5 dấu thanh Tiếng Việt (s, f, r, x, j)", desc: "Phản xạ gõ dấu không cần suy nghĩ", free: false,
+      lessons: [
+        { name: "Bài 1: Chuỗi 5 dấu thanh", mode: "key", hint: "s=sắc, f=huyền, r=hỏi, x=ngã, j=nặng", text: "as af ar ax aj las laf lar lax laj mas maf mar max maj" },
+        { name: "Bài 2: Ca dao lục bát", mode: "vn", hint: "Gõ câu chứa đầy đủ thanh điệu tiếng Việt", text: "Bầu ơi thương lấy bí cùng tuy rằng khác giống nhưng chung một giàn" },
+        { name: "Bài 3: Đoạn văn giàu thanh điệu", mode: "vn", hint: "Gõ dấu ngay cuối mỗi từ trước khi nhấn Cách", text: "Tiếng Việt của chúng ta vô cùng giàu đẹp và uyển chuyển như một bản nhạc du dương" }
+      ]
+    },
+    {
+      id: 9, tag: "NGÀY 9", title: "Phím Shift & Gõ Chữ Hoa, Tên Riêng", desc: "Quy tắc dùng ngón út đối diện giữ phím Shift", free: false,
+      lessons: [
+        { name: "Bài 1: Phối hợp Shift", mode: "key", hint: "Giữ Shift bằng ngón út tay đối diện", text: "Aa Ss Dd Ff Jj Kk Ll Ha Noi Viet Nam Da Nang Sai Gon" },
+        { name: "Bài 2: Địa danh Việt Nam", mode: "vn", hint: "Viết hoa đúng chữ cái đầu mỗi tên riêng", text: "Việt Nam có thủ đô Hà Nội, thành phố Đà Nẵng, cố đô Huế và thành phố Hồ Chí Minh" },
+        { name: "Bài 3: Văn bản hành chính", mode: "vn", hint: "Giữ tốc độ ổn định khi gõ chữ hoa", text: "Kính gửi Ban Giám đốc Công ty Cổ phần Công nghệ Số cùng toàn thể các anh chị nhân viên" }
+      ]
+    },
+    {
+      id: 10, tag: "NGÀY 10", title: "Chế độ Trẻ Em: Truyện cổ tích & Khoa học", desc: "Bài luyện câu dài giàu vần điệu cho học sinh", free: false,
+      lessons: [
+        { name: "Bài 1: Chú Cuội cung trăng", mode: "vn", hint: "Gõ thong thả, ưu tiên chính xác 98%", text: "Chú Cuội ngồi gốc cây đa, để trâu ăn lúa gọi cha ời ời, cha còn cắt cỏ trên trời" },
+        { name: "Bài 2: Rùa và Thỏ", mode: "vn", hint: "Giữ nhịp gõ đều đặn như bước chân chú Rùa", text: "Nhờ sự kiên trì và không bao giờ bỏ cuộc, chú Rùa nhỏ đã về đích trước trong tiếng reo hò" },
+        { name: "Bài 3: Khám phá vũ trụ", mode: "vn", hint: "Mắt nhìn trước một từ khi đang gõ từ hiện tại", text: "Trái Đất của chúng ta quay quanh Mặt Trời tạo nên bốn mùa xuân hạ thu đông tươi đẹp" }
+      ]
+    },
+    {
+      id: 11, tag: "NGÀY 11", title: "Chế độ Văn Phòng: Email & Báo cáo công sở", desc: "Các mẫu câu giao tiếp công sở dùng hàng ngày", free: false,
+      lessons: [
+        { name: "Bài 1: Gửi báo cáo tuần", mode: "vn", hint: "Tăng tốc độ gõ cụm từ công sở quen thuộc", text: "Em xin phép gửi anh chị bản báo cáo tổng hợp tiến độ dự án tuần này để anh chị xem xét ạ" },
+        { name: "Bài 2: Xác nhận lịch họp", mode: "vn", hint: "Gõ liền mạch không dừng nghỉ giữa các từ", text: "Cảm ơn anh đã phản hồi, em xin xác nhận lịch họp của nhóm chúng ta vào sáng thứ Ba tuần tới" },
+        { name: "Bài 3: Chăm sóc khách hàng", mode: "vn", hint: "Độ chính xác tuyệt đối tạo sự chuyên nghiệp", text: "Rất mong nhận được ý kiến đóng góp của quý khách hàng để chúng tôi phục vụ ngày một tốt hơn" }
+      ]
+    },
+    {
+      id: 12, tag: "NGÀY 12", title: "Luyện gõ Hàng Số & Ký hiệu báo cáo", desc: "Gõ số liệu, ngày tháng, phần trăm chuẩn 10 ngón", free: false,
+      lessons: [
+        { name: "Bài 1: Hàng phím số", mode: "key", hint: "Vươn ngón lên hàng số 1 đến 0", text: "12 34 56 78 90 100 2026 15 30 45 60 75 99 12345 67890" },
+        { name: "Bài 2: Ngày tháng & Giờ", mode: "vn", hint: "Kết hợp gõ chữ và số liệu thực tế", text: "Cuộc họp bắt đầu lúc 8 giờ 30 phút ngày 26 tháng 10 năm 2026 với 45 thành viên tham dự" },
+        { name: "Bài 3: Số liệu kinh doanh", mode: "vn", hint: "Giữ tay ở hàng cơ sở khi vươn lên phím số", text: "Doanh thu quý 3 tăng trưởng 28 phần trăm, vượt mục tiêu kế hoạch năm 2026 đã đề ra" }
+      ]
+    },
+    {
+      id: 13, tag: "NGÀY 13", title: "Sửa lỗi các âm dễ nhầm (tr/ch, s/x, gi/d, ngh/ng)", desc: "Luyện gõ chính tả kết hợp tốc độ cao", free: false,
+      lessons: [
+        { name: "Bài 1: Phân biệt tr/ch & s/x", mode: "vn", hint: "Tập trung mắt vào màn hình, đọc trước cụm từ", text: "Buổi trưa ăn bưởi chua, cùng ngắm bầu trời trong xanh và chia sẻ những câu chuyện vui" },
+        { name: "Bài 2: Phân biệt ngh/ng & gi/d", mode: "vn", hint: "Rèn phản xạ chính tả tự động cho đôi tay", text: "Lắng nghe tiếng gió rì rào qua hàng cây, lòng người bỗng thấy dịu dàng và bình yên lạ thường" },
+        { name: "Bài 3: Đoạn văn chuẩn chính tả", mode: "vn", hint: "Gõ trôi chảy cả câu dài không vấp", text: "Sự kiên nhẫn và chăm chỉ rèn luyện mỗi ngày chính là chìa khóa dẫn đến thành công bền vững" }
+      ]
+    },
+    {
+      id: 14, tag: "NGÀY 14", title: "Tăng tốc độ: Chinh phục cột mốc 60 WPM", desc: "Đoạn văn dài rèn nhịp điệu gõ lướt như bay", free: false,
+      lessons: [
+        { name: "Bài 1: Nhịp điệu lướt phím", mode: "vn", hint: "Giữ nhịp thở đều, không nhìn xuống bàn phím", text: "Kỹ năng gõ mười ngón giúp bạn giải phóng suy nghĩ và làm việc nhanh gấp đôi mỗi ngày" },
+        { name: "Bài 2: Tập trung sâu", mode: "vn", hint: "Nhìn trước 2 từ tiếp theo trên màn hình", text: "Khi đôi bàn tay đã nhớ vị trí từng phím, ý tưởng trong đầu bạn sẽ tuôn trào ra màn hình ngay lập tức" },
+        { name: "Bài 3: Bứt phá tốc độ", mode: "vn", hint: "Thả lỏng cổ tay để các ngón lướt nhẹ nhất", text: "Chỉ cần mười lăm phút thực hành đều đặn mỗi ngày, bạn đã sở hữu một kỹ năng quý giá dùng suốt cuộc đời" }
+      ]
+    },
+    {
+      id: 15, tag: "NGÀY 15", title: "Thi Sát Hạch Tốt Nghiệp 15 Ngày", desc: "Bài kiểm tra tổng hợp tốc độ & độ chính xác", free: false,
+      lessons: [
+        { name: "Bài 1: Khởi động sát hạch", mode: "vn", hint: "Đạt độ chính xác từ 96% trở lên", text: "Hôm nay tôi hoàn toàn tự tin đặt mười ngón tay lên bàn phím và gõ tiếng Việt thật chuẩn xác" },
+        { name: "Bài 2: Sát hạch Văn phòng", mode: "vn", hint: "Giữ tốc độ ổn định trên toàn đoạn văn", text: "Chúc mừng bạn đã kiên trì đi trọn hành trình mười lăm ngày để làm chủ hoàn toàn bàn phím máy tính" },
+        { name: "Bài 3: Bài thi Tốt nghiệp", mode: "vn", hint: "Tải Thẻ Tốc Độ ngay sau khi hoàn thành!", text: "Mọi hành trình vạn dặm đều bắt đầu từ những bước chân nhỏ bé, và hôm nay đôi tay bạn đã thực sự lướt mây" }
+      ]
+    }
+  ];
+
+  let isProUnlocked = false;
+  let practiceMode = "course"; // 'course' | 'ai' | 'custom'
+  let aiFreeUses = Number(localStorage.getItem("ntlab:ai_free_uses") || 0);
+  let dynamicLesson = {
+    name: "✨ AI Sáng Tạo Bài Gõ",
+    mode: "vn",
+    hint: "Bật UniKey/EVKey, gõ đoạn văn bên dưới và nhấn Cách để chốt từ",
+    text: "Chào anh chị, em xin gửi báo cáo tiến độ công việc tuần này. Tất cả các hạng mục đều đã hoàn thành đúng kế hoạch đề ra."
+  };
+
+  let curDayIdx = 0;
+  let curSubIdx = 0;
+  let charIndex = 0;
+  let wrongCount = 0;
+  let totalKeystrokes = 0;
+  let startTime = null;
+
+  // Đồng hồ đếm 15 phút luyện tập mỗi ngày
+  const todayKey = `ntlab:daily_sec:${new Date().toISOString().slice(0, 10)}`;
+  let dailySeconds = Number(localStorage.getItem(todayKey) || 0);
+
+  function formatMMSS(sec) {
+    const m = String(Math.floor(sec / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    return `${m}:${s}`;
+  }
+
+  setInterval(() => {
+    if (startTime && !document.getElementById("pay-modal").classList.contains("open")) {
+      dailySeconds += 1;
+      localStorage.setItem(todayKey, String(dailySeconds));
+      const el = document.getElementById("st-daily-time");
+      if (el) el.textContent = formatMMSS(dailySeconds);
+    }
+  }, 1000);
+
+  function switchPracticeMode(mode) {
+    practiceMode = mode;
+    document.getElementById("tab-course").classList.toggle("active", mode === "course");
+    document.getElementById("tab-ai").classList.toggle("active", mode === "ai");
+    document.getElementById("tab-custom").classList.toggle("active", mode === "custom");
+
+    document.getElementById("ai-toolbar").classList.toggle("visible", mode === "ai");
+    document.getElementById("custom-toolbar").classList.toggle("visible", mode === "custom");
+    document.getElementById("sub-lessons").style.display = mode === "course" ? "flex" : "none";
+
+    if (mode === "ai") {
+      document.getElementById("day-label").textContent = "✨ CHẾ ĐỘ AI SÁNG TẠO BÀI GÕ";
+      document.getElementById("lesson-title").textContent = dynamicLesson.name;
+      generateAiExercise("email", true);
+    } else if (mode === "custom") {
+      document.getElementById("day-label").textContent = "📝 CHẾ ĐỘ TỰ DÁN VĂN BẢN";
+      document.getElementById("lesson-title").textContent = "Văn bản tùy chọn của bạn";
+      resetExercise();
+    } else {
+      renderSubLessons();
+      resetExercise();
+    }
+  }
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  async function generateAiExercise(topic = "email", silentFirst = false) {
+    if (!silentFirst && !isProUnlocked && aiFreeUses >= 2) {
+      openPayModal();
+      return;
+    }
+    if (!silentFirst) {
+      aiFreeUses += 1;
+      localStorage.setItem("ntlab:ai_free_uses", String(aiFreeUses));
+    }
+
+    document.querySelectorAll(".ai-chip").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.topic === topic);
+    });
+
+    const pool = AI_SMART_POOLS[topic] || AI_SMART_POOLS.email;
+    const text = `${pickRandom(pool.openers)} ${pickRandom(pool.middles)}`;
+    const titles = {
+      email: "📧 AI: Mẫu Email Công Sở Chuyên Nghiệp",
+      music: "🎵 AI: Giai Điệu Ca Khúc & Thơ Vần Điệu",
+      humor: "😂 AI: Truyện Cười Văn Phòng Xả Stress",
+      kids: "🧚 AI: Truyện Cổ Tích & Bài Học Cho Bé"
+    };
+
+    dynamicLesson = {
+      name: titles[topic] || "✨ AI Tạo Bài Gõ",
+      mode: "vn",
+      hint: "Gõ đoạn văn do AI biên soạn, nhấn Cách để chốt từng từ",
+      text
+    };
+    document.getElementById("lesson-title").textContent = dynamicLesson.name;
+    resetExercise();
+  }
+
+  async function generateAiFromInput() {
+    if (!isProUnlocked && aiFreeUses >= 2) {
+      openPayModal();
+      return;
+    }
+    const promptInput = document.getElementById("ai-prompt-input");
+    const userTopic = (promptInput?.value || "").trim();
+    if (!userTopic) {
+      generateAiExercise("email");
+      return;
+    }
+
+    const btn = document.getElementById("btn-ai-gen");
+    const savedKey = localStorage.getItem("ntlab:gemini_api_key") || (window.NTLabFirebaseConfig?.geminiConfig?.apiKey || "");
+
+    btn.textContent = "⏳ Đang viết...";
+    btn.disabled = true;
+
+    try {
+      if (savedKey) {
+        const model = window.NTLabFirebaseConfig?.geminiConfig?.model || "gemini-2.5-flash";
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(savedKey)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `Hãy viết một đoạn văn tiếng Việt tự nhiên, truyền cảm hứng hoặc chuyên nghiệp dài khoảng 35 đến 50 từ về chủ đề: "${userTopic}". Chỉ trả về đúng 1 đoạn văn thuần túy, không xuống dòng, không dùng ký tự đặc biệt hay markdown để người dùng luyện gõ 10 ngón.`
+              }]
+            }]
+          })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          const generated = data?.candidates?.[0]?.content?.parts?.[0]?.text?.replace(/\s+/g, " ").trim();
+          if (generated && generated.length > 15) {
+            aiFreeUses += 1;
+            localStorage.setItem("ntlab:ai_free_uses", String(aiFreeUses));
+            dynamicLesson = {
+              name: `✨ Gemini AI: ${userTopic.slice(0, 38)}`,
+              mode: "vn",
+              hint: "Đoạn văn vừa được tạo trực tiếp bởi Google Gemini AI",
+              text: generated
+            };
+            document.getElementById("lesson-title").textContent = dynamicLesson.name;
+            resetExercise();
+            return;
+          }
+        }
+      }
+
+      // Fallback thông minh kết hợp chủ đề của người dùng ngay lập tức nếu chưa điền Gemini Key
+      aiFreeUses += 1;
+      localStorage.setItem("ntlab:ai_free_uses", String(aiFreeUses));
+      const cleanTopic = userTopic.replace(/[^\p{L}\p{N}\s,.-]/gu, "").trim();
+      dynamicLesson = {
+        name: `✨ AI Chủ đề: ${cleanTopic.slice(0, 36)}`,
+        mode: "vn",
+        hint: "Mẹo: Bấm nút ⚙️ Key AI nếu muốn kết nối trực tiếp Google Gemini API",
+        text: `Về chủ đề ${cleanTopic}, chúng ta luôn cần sự chuẩn bị chu đáo, tập trung cao độ và phối hợp nhịp nhàng để hoàn thành xuất sắc mục tiêu đã đề ra trong thời gian sớm nhất.`
+      };
+      document.getElementById("lesson-title").textContent = dynamicLesson.name;
+      resetExercise();
+    } finally {
+      btn.textContent = "✨ Tạo Bài Mới";
+      btn.disabled = false;
+    }
+  }
+
+  function configureGeminiKey() {
+    const current = localStorage.getItem("ntlab:gemini_api_key") || "";
+    const input = prompt(
+      "Nhập Google Gemini API Key miễn phí (lấy tại aistudio.google.com/app/apikey) để tạo đoạn văn theo mọi chủ đề bất kỳ.\n(Để trống nếu chỉ muốn dùng Kho AI tích hợp sẵn):",
+      current
+    );
+    if (input !== null) {
+      localStorage.setItem("ntlab:gemini_api_key", input.trim());
+      alert(input.trim() ? "✅ Đã lưu Gemini API Key! Bây giờ bạn có thể nhập bất kỳ chủ đề nào và bấm Tạo Bài Mới." : "Đã chuyển về chế độ Kho AI tích hợp sẵn.");
+    }
+  }
+
+  function applyCustomText() {
+    if (!isProUnlocked && aiFreeUses >= 2) {
+      openPayModal();
+      return;
+    }
+    const raw = (document.getElementById("custom-text-input")?.value || "").replace(/\s+/g, " ").trim();
+    if (raw.length < 10) {
+      alert("Vui lòng dán đoạn văn bản dài ít nhất 10 ký tự để luyện gõ nhé!");
+      return;
+    }
+    aiFreeUses += 1;
+    localStorage.setItem("ntlab:ai_free_uses", String(aiFreeUses));
+    dynamicLesson = {
+      name: "📝 Văn bản tự chọn của bạn",
+      mode: "vn",
+      hint: "Đang luyện gõ trên chính văn bản bạn vừa dán vào",
+      text: raw.slice(0, 500)
+    };
+    resetExercise();
+  }
+
+  function getSavedPracticeSummary() {
+    let raw = { history: [], dailySecondsMap: {} };
+    try {
+      raw = JSON.parse(localStorage.getItem("go-may:v1") || '{"history":[],"dailySecondsMap":{}}');
+    } catch { /* ignore */ }
+    const history = Array.isArray(raw.history) ? raw.history : [];
+    const lessonBestMap = new Map();
+    let bestWpm = 0;
+    let sumAcc = 0;
+
+    for (const item of history) {
+      if (!item || typeof item.lessonId !== "string") continue;
+      const w = Number(item.wpm) || 0;
+      const a = Number(item.accuracy) || 0;
+      if (w > bestWpm) bestWpm = w;
+      sumAcc += a;
+      const prev = lessonBestMap.get(item.lessonId) || 0;
+      if (w >= prev) lessonBestMap.set(item.lessonId, w);
+    }
+
+    const totalCourseLessons = CURRICULUM.reduce((acc, d) => acc + d.lessons.length, 0);
+    let completedCourseLessons = 0;
+    CURRICULUM.forEach(d => {
+      d.lessons.forEach((_, sIdx) => {
+        if (lessonBestMap.has(`day-${d.id}-${sIdx + 1}`)) completedCourseLessons++;
+      });
+    });
+
+    const avgAcc = history.length > 0 ? Math.round(sumAcc / history.length) : 100;
+    return {
+      history,
+      lessonBestMap,
+      bestWpm,
+      avgAcc,
+      totalRuns: history.length,
+      completedCourseLessons,
+      totalCourseLessons
+    };
+  }
+
+  function formatLessonIdLabel(lessonId) {
+    if (!lessonId) return "Bài luyện tự do";
+    const m = /^day-(\d+)-(\d+)$/.exec(lessonId);
+    if (m) {
+      const dId = Number(m[1]);
+      const sNum = Number(m[2]);
+      const day = CURRICULUM.find(x => x.id === dId);
+      if (day) {
+        const ls = day.lessons[sNum - 1];
+        return `${day.tag} · ${ls ? ls.name : 'Bài ' + sNum}`;
+      }
+    }
+    if (lessonId === "mode-ai") return "✨ AI Tạo Bài Gõ";
+    if (lessonId === "mode-custom") return "📝 Văn bản tự dán";
+    return lessonId;
+  }
+
+  function getSubscriptionInfo() {
+    let status = "locked";
+    let codes = [];
+    if (window.NTLabPlatform) {
+      const client = window.NTLabPlatform.createClient();
+      isProUnlocked = client.hasAccess("go-may");
+      status = client.unlockStatus("go-may");
+      codes = Array.isArray(client.state?.licenses) ? client.state.licenses.map(l => l.code) : [];
+    }
+    let planTitle = "🎁 Gói Miễn Phí (Mở 3 Ngày đầu)";
+    let isPro = false;
+    if (status === "license-bundle") {
+      planTitle = "🌟 Gói Trọn Bộ All-in-One (99k)";
+      isPro = true;
+    } else if (status === "license-app") {
+      planTitle = "👑 Gói Pro 15 Ngày Vĩnh Viễn (39k)";
+      isPro = true;
+    } else if (status === "preview" || isProUnlocked) {
+      planTitle = "✨ Gói Pro (Chế độ Mở thử Demo)";
+      isPro = true;
+    }
+    const codeLabel = codes.length > 0 ? `Mã: ${codes.join(", ")}` : (isPro ? "Đã mở khóa" : "Chưa kích hoạt mã");
+    return { isPro, status, codes, planTitle, codeLabel };
+  }
+
+  function renderProfileAndPlanCard() {
+    const summary = getSavedPracticeSummary();
+    const sub = getSubscriptionInfo();
+    const cloudSt = window.NTLabCloud ? window.NTLabCloud.getStatus() : { user: null, lastSyncAt: null };
+
+    // Cập nhật thẻ trực tiếp ở cột phải
+    const userLabel = document.getElementById("uc-user-label");
+    const syncBadge = document.getElementById("uc-sync-badge");
+    const planBox = document.getElementById("uc-plan-box");
+    const planName = document.getElementById("uc-plan-name");
+    const planCode = document.getElementById("uc-plan-code");
+
+    if (userLabel) {
+      userLabel.textContent = cloudSt.user
+        ? `☁️ ${cloudSt.user.displayName || cloudSt.user.email}`
+        : "👤 Khách (Chưa đăng nhập)";
+    }
+    if (syncBadge) {
+      syncBadge.textContent = cloudSt.user ? "🟢 Đã lưu Cloud" : "⚪ Lưu trên máy";
+      syncBadge.className = "uc-sync-badge" + (cloudSt.user ? "" : " local");
+    }
+    if (planBox) planBox.classList.toggle("pro", sub.isPro);
+    if (planName) planName.textContent = sub.planTitle;
+    if (planCode) planCode.textContent = sub.codeLabel;
+
+    const doneEl = document.getElementById("uc-done-count");
+    const bestEl = document.getElementById("uc-best-wpm");
+    const runsEl = document.getElementById("uc-total-runs");
+    if (doneEl) doneEl.textContent = `${summary.completedCourseLessons}/${summary.totalCourseLessons} bài`;
+    if (bestEl) bestEl.textContent = `${summary.bestWpm} WPM`;
+    if (runsEl) runsEl.textContent = `${summary.totalRuns} lần`;
+
+    // Cập nhật nội dung trong Modal Hồ sơ & Gói đăng ký
+    const pmAccount = document.getElementById("pm-account-name");
+    const pmSync = document.getElementById("pm-sync-status");
+    const pmBtnAuth = document.getElementById("pm-btn-auth");
+    const pmPlanTitle = document.getElementById("pm-plan-title");
+    const pmPlanCodes = document.getElementById("pm-plan-codes");
+
+    if (pmAccount) {
+      pmAccount.textContent = cloudSt.user
+        ? `☁️ ${cloudSt.user.displayName} (${cloudSt.user.email || "Google Account"})`
+        : "👤 Khách (Chưa liên kết tài khoản Google)";
+    }
+    if (pmSync) {
+      const syncTimeStr = cloudSt.lastSyncAt ? new Date(cloudSt.lastSyncAt).toLocaleTimeString("vi-VN") : "vừa xong";
+      pmSync.textContent = cloudSt.user
+        ? `✅ Đã kết nối Firebase Cloud (ntlab-apps) · Đồng bộ gần nhất: ${syncTimeStr}`
+        : "Dữ liệu đang lưu trên trình duyệt này. Hãy bấm Đăng nhập Google để đồng bộ tiến độ & gói cước lên Cloud.";
+    }
+    if (pmBtnAuth) {
+      pmBtnAuth.textContent = cloudSt.user ? "🚪 Đăng xuất tài khoản" : "☁️ Đăng nhập Google ngay";
+    }
+    if (pmPlanTitle) pmPlanTitle.textContent = sub.planTitle;
+    if (pmPlanCodes) {
+      pmPlanCodes.textContent = sub.codes.length > 0
+        ? `Mã bản quyền gắn với tài khoản: ${sub.codes.join(", ")}`
+        : (sub.isPro ? "Trạng thái: Đang mở khóa chế độ Demo" : "Mã bản quyền: Chưa kích hoạt (Mở sẵn 3 ngày đầu)");
+    }
+
+    const pmLessons = document.getElementById("pm-stat-lessons");
+    const pmBest = document.getElementById("pm-stat-best");
+    const pmAcc = document.getElementById("pm-stat-acc");
+    const pmTime = document.getElementById("pm-stat-time");
+    const pmTotalRuns = document.getElementById("pm-total-runs-label");
+
+    if (pmLessons) pmLessons.textContent = `${summary.completedCourseLessons} / ${summary.totalCourseLessons}`;
+    if (pmBest) pmBest.textContent = `${summary.bestWpm} WPM`;
+    if (pmAcc) pmAcc.textContent = `${summary.avgAcc}%`;
+    if (pmTime) pmTime.textContent = `${formatMMSS(dailySeconds)} / 15:00`;
+    if (pmTotalRuns) pmTotalRuns.textContent = `Tổng đã lưu: ${summary.totalRuns} lượt`;
+
+    const tbody = document.getElementById("pm-history-tbody");
+    if (tbody) {
+      if (summary.history.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#64748b;padding:16px;">Chưa có lượt luyện tập nào được lưu. Hãy gõ xong 1 bài ngắn để hệ thống ghi nhận nhé!</td></tr>`;
+      } else {
+        const recent = [...summary.history].reverse().slice(0, 30);
+        tbody.innerHTML = recent.map(item => {
+          const dt = item.at ? new Date(item.at).toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" }) : "";
+          return `
+            <tr>
+              <td style="color:#64748b;">${dt}</td>
+              <td><strong>${formatLessonIdLabel(item.lessonId)}</strong></td>
+              <td><strong style="color:#16a34a;">${item.wpm || 0} WPM</strong></td>
+              <td>${item.accuracy || 100}%</td>
+              <td>${item.seconds || 15}s</td>
+            </tr>
+          `;
+        }).join("");
+      }
+    }
+  }
+
+  function openProfileModal() {
+    renderProfileAndPlanCard();
+    document.getElementById("profile-modal").classList.add("open");
+  }
+
+  function closeProfileModal() {
+    document.getElementById("profile-modal").classList.remove("open");
+  }
+
+  async function syncCloudNow() {
+    if (!window.NTLabCloud) return;
+    const st = window.NTLabCloud.getStatus();
+    if (!st.user) {
+      const res = await window.NTLabCloud.signInWithGoogle();
+      if (!res.ok) { alert(res.reason); return; }
+    }
+    const btn = document.getElementById("pm-btn-sync");
+    if (btn) { btn.textContent = "⏳ Đang đồng bộ..."; btn.disabled = true; }
+    try {
+      const raw = JSON.parse(localStorage.getItem("go-may:v1") || '{"history":[],"dailySecondsMap":{}}');
+      const todayIso = new Date().toISOString().slice(0, 10);
+      raw.dailySecondsMap = { ...(raw.dailySecondsMap || {}), [todayIso]: dailySeconds };
+      const merged = await window.NTLabCloud.syncAppState("go-may", raw);
+      localStorage.setItem("go-may:v1", JSON.stringify(merged));
+      if (merged.dailySecondsMap && merged.dailySecondsMap[todayIso]) {
+        dailySeconds = Math.max(dailySeconds, Number(merged.dailySecondsMap[todayIso]) || 0);
+        localStorage.setItem(todayKey, String(dailySeconds));
+      }
+      syncEntitlementFromPlatform();
+    } finally {
+      if (btn) { btn.textContent = "✅ Đã đồng bộ Cloud!"; setTimeout(() => { btn.textContent = "🔄 Đồng bộ Cloud ngay"; btn.disabled = false; }, 1400); }
+    }
+  }
+
+  async function handleAuthFromModal() {
+    if (!window.NTLabCloud) return;
+    const st = window.NTLabCloud.getStatus();
+    if (st.user) {
+      await window.NTLabCloud.signOut();
+    } else {
+      const res = await window.NTLabCloud.signInWithGoogle();
+      if (!res.ok) alert(res.reason);
+    }
+    syncEntitlementFromPlatform();
+  }
+
+  function syncEntitlementFromPlatform() {
+    const sub = getSubscriptionInfo();
+    const unlockBtn = document.getElementById("btn-top-unlock");
+    if (unlockBtn) {
+      unlockBtn.textContent = sub.isPro ? "✅ Đã Mở Full 15 Ngày" : "🔓 Mở khóa 15 Ngày · 39k";
+    }
+    const googleBtn = document.getElementById("btn-google-login");
+    if (googleBtn && window.NTLabCloud) {
+      const st = window.NTLabCloud.getStatus();
+      googleBtn.textContent = st.user ? `☁️ ${st.user.displayName || st.user.email}` : "☁️ Đăng nhập Google";
+      googleBtn.classList.toggle("logged-in", Boolean(st.user));
+    }
+    renderSidebar();
+    renderSubLessons();
+    renderProfileAndPlanCard();
+  }
+
+  async function handleGoogleLogin() {
+    if (!window.NTLabCloud) return;
+    const st = window.NTLabCloud.getStatus();
+    if (st.user) {
+      // Nếu đã đăng nhập, bấm vào nút tài khoản sẽ mở Hồ Sơ & Gói Đăng Ký (tránh bấm nhầm bị thoát)
+      openProfileModal();
+      return;
+    }
+    const res = await window.NTLabCloud.signInWithGoogle();
+    if (!res.ok) alert(res.reason);
+    syncEntitlementFromPlatform();
+  }
+
+  async function handleActivateLicense() {
+    const inputEl = document.getElementById("license-code-input");
+    const msgEl = document.getElementById("license-code-msg");
+    const raw = inputEl ? inputEl.value : "";
+    const res = window.NTLabCloud
+      ? await window.NTLabCloud.activateLicense(raw)
+      : (window.NTLabPlatform ? window.NTLabPlatform.createClient().activateLicense(raw) : { valid: false, reason: "Lỗi module" });
+
+    if (msgEl) {
+      msgEl.textContent = res.valid ? `🎉 Kích hoạt thành công mã ${res.code}! Đã mở khóa & lưu vào Hồ Sơ Cloud.` : res.reason;
+      msgEl.className = `ntlab-license-msg ${res.valid ? 'ok' : 'err'}`;
+    }
+    if (res.valid) {
+      syncEntitlementFromPlatform();
+    }
+  }
+
+  function exportSpeedCard() {
+    const wpm = Number(document.getElementById("st-wpm").textContent) || 0;
+    const acc = document.getElementById("st-acc").textContent || "100%";
+    const day = CURRICULUM[curDayIdx];
+    if (window.NTLabUI) {
+      window.NTLabUI.downloadShareCard({
+        title: "Tập Gõ Máy Tính · Gõ 10 Ngón 15 Ngày",
+        primaryStat: `${wpm} WPM`,
+        secondaryStat: `Độ chính xác: ${acc}`,
+        badge: wpm >= 60 ? "Hạng: Cao thủ bàn phím cơ ⚡" : "Hạng: Đôi tay chuẩn 10 ngón 🔥",
+        subtitle: practiceMode === "course" ? `${day.tag}: ${day.title}` : dynamicLesson.name,
+        footerLeft: "Thử thách tốc độ tại: /go-may",
+        filename: `tap-go-may-tinh-${wpm}wpm.png`
+      });
+    }
+  }
+
+  function renderKeyboard() {
+    const wrap = document.getElementById("keyboard");
+    wrap.innerHTML = "";
+    KB_ROWS.forEach(row => {
+      const rEl = document.createElement("div");
+      rEl.className = "kb-row";
+      row.forEach(item => {
+        const kEl = document.createElement("div");
+        kEl.className = "key " + (item.cls || "") + (item.bump ? " home-bump" : "");
+        kEl.dataset.key = item.k.toLowerCase();
+        kEl.dataset.finger = item.f;
+        kEl.textContent = item.label || item.k;
+        rEl.appendChild(kEl);
+      });
+      wrap.appendChild(rEl);
+    });
+  }
+
+  function renderSidebar() {
+    const list = document.getElementById("day-list");
+    if (!list) return;
+    list.innerHTML = "";
+    const summary = getSavedPracticeSummary();
+    CURRICULUM.forEach((d, idx) => {
+      const unlocked = d.free || isProUnlocked;
+      let doneInDay = 0;
+      d.lessons.forEach((_, sIdx) => {
+        if (summary.lessonBestMap.has(`day-${d.id}-${sIdx + 1}`)) doneInDay++;
+      });
+      const progressLabel = doneInDay > 0 ? `✓ ${doneInDay}/${d.lessons.length} bài` : `${d.lessons.length} bài`;
+      const btn = document.createElement("button");
+      btn.className = "day-item" + (practiceMode === "course" && idx === curDayIdx ? " active" : "") + (d.hook ? " hook" : "");
+      btn.innerHTML = `
+        <div class="day-top">
+          <span>${d.tag} · ${progressLabel}</span>
+          <span class="${unlocked ? 'badge-free' : 'badge-lock'}">${unlocked ? (doneInDay === d.lessons.length ? '✅ HOÀN THÀNH' : 'MỞ SẴN') : '🔒 PRO 39K'}</span>
+        </div>
+        <div class="day-title">${d.title}</div>
+        <div class="day-desc">${d.desc}</div>
+      `;
+      btn.onclick = () => {
+        if (!unlocked) { openPayModal(); return; }
+        curDayIdx = idx; curSubIdx = 0;
+        if (practiceMode !== "course") switchPracticeMode("course");
+        else { renderSidebar(); renderSubLessons(); resetExercise(); }
+      };
+      list.appendChild(btn);
+    });
+  }
+
+  function renderSubLessons() {
+    const day = CURRICULUM[curDayIdx];
+    document.getElementById("day-label").textContent = day.tag + " — LỘ TRÌNH 15 NGÀY";
+    document.getElementById("lesson-title").textContent = day.title;
+    const subWrap = document.getElementById("sub-lessons");
+    if (!subWrap) return;
+    subWrap.innerHTML = "";
+    const summary = getSavedPracticeSummary();
+    day.lessons.forEach((ls, sIdx) => {
+      const lid = `day-${day.id}-${sIdx + 1}`;
+      const best = summary.lessonBestMap.get(lid);
+      const b = document.createElement("button");
+      b.className = "sub-btn" + (sIdx === curSubIdx ? " active" : "");
+      b.textContent = best !== undefined ? `✓ ${ls.name} (${best} WPM)` : ls.name;
+      b.onclick = () => { curSubIdx = sIdx; renderSubLessons(); resetExercise(); };
+      subWrap.appendChild(b);
+    });
+  }
+
+  function getLesson() {
+    if (practiceMode !== "course") return dynamicLesson;
+    return CURRICULUM[curDayIdx].lessons[curSubIdx];
+  }
+
+  function resetExercise() {
+    charIndex = 0; wrongCount = 0; totalKeystrokes = 0; startTime = null;
+    const ls = getLesson();
+    document.getElementById("telex-hint").textContent = "💡 " + ls.hint;
+    const input = document.getElementById("vn-input");
+    input.value = "";
+    input.placeholder = ls.mode === "key"
+      ? "Bấm trực tiếp phím đang sáng vàng trên bàn phím..."
+      : "Bật UniKey/EVKey, gõ chữ tiếng Việt vào đây và nhấn phím Cách...";
+    input.focus();
+    updatePromptDisplay();
+    updateStats();
+  }
+
+  function updatePromptDisplay() {
+    const ls = getLesson();
+    const box = document.getElementById("prompt-box");
+    box.innerHTML = "";
+    if (ls.mode === "key") {
+      [...ls.text].forEach((ch, idx) => {
+        const span = document.createElement("span");
+        span.className = "char" + (idx < charIndex ? " done" : idx === charIndex ? " current" : "");
+        span.textContent = ch;
+        box.appendChild(span);
+      });
+      highlightTargetKey(ls.text[charIndex] || "");
+    } else {
+      const words = ls.text.split(" ");
+      const typedWords = document.getElementById("vn-input").value.trimStart().split(/\s+/).filter(Boolean);
+      const isEndsWithSpace = document.getElementById("vn-input").value.endsWith(" ");
+      const activeIdx = isEndsWithSpace ? typedWords.length : Math.max(0, typedWords.length - 1);
+
+      words.forEach((w, idx) => {
+        const sp = document.createElement("span");
+        let cls = "word-token";
+        if (idx < activeIdx) {
+          cls += typedWords[idx] === w ? " done" : " wrong";
+        } else if (idx === activeIdx) {
+          cls += " current";
+        }
+        sp.className = cls;
+        sp.textContent = w;
+        box.appendChild(sp);
+      });
+      const nextWord = words[activeIdx] || "";
+      const firstChar = nextWord[0] ? nextWord[0].toLowerCase() : " ";
+      highlightTargetKey(VN_BASE_MAP[firstChar] || firstChar);
+    }
+  }
+
+  function highlightTargetKey(rawChar) {
+    document.querySelectorAll(".key").forEach(k => k.classList.remove("target-key"));
+    document.querySelectorAll(".finger-shape").forEach(f => f.classList.remove("active-finger"));
+
+    if (!rawChar) return;
+    const ch = rawChar.toLowerCase();
+    const keyEl = document.querySelector(`.key[data-key="${CSS.escape(ch)}"]`);
+    const badge = document.getElementById("next-key-box");
+    const fText = document.getElementById("finger-text");
+
+    badge.textContent = ch === " " ? "CÁCH" : ch.toUpperCase();
+    if (keyEl) {
+      keyEl.classList.add("target-key");
+      const fCode = keyEl.dataset.finger;
+      fText.textContent = "👉 " + (FINGER_NAMES[fCode] || "Ngón cái");
+      if (fCode === "TH") {
+        document.getElementById("f-TH-L").classList.add("active-finger");
+        document.getElementById("f-TH-R").classList.add("active-finger");
+      } else {
+        const fSvg = document.getElementById("f-" + fCode);
+        if (fSvg) fSvg.classList.add("active-finger");
+      }
+    }
+  }
+
+  function updateStats() {
+    const ls = getLesson();
+    const elapsedMin = startTime ? Math.max((Date.now() - startTime) / 60000, 0.05) : 0;
+    const wpm = startTime ? Math.round((charIndex / 5) / elapsedMin) : 0;
+    const acc = totalKeystrokes > 0 ? Math.max(0, Math.round(((totalKeystrokes - wrongCount) / totalKeystrokes) * 100)) : 100;
+    const prog = Math.min(100, Math.round((charIndex / ls.text.length) * 100));
+
+    document.getElementById("st-wpm").textContent = wpm;
+    document.getElementById("st-acc").textContent = acc + "%";
+    document.getElementById("st-prog").textContent = prog + "%";
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (document.getElementById("pay-modal").classList.contains("open") || document.getElementById("profile-modal").classList.contains("open")) return;
+    const activeId = document.activeElement ? document.activeElement.id : "";
+    if (["license-code-input", "ai-prompt-input", "custom-text-input"].includes(activeId)) return;
+    const ls = getLesson();
+    if (ls.mode !== "key") return;
+    if (e.key.length !== 1) return;
+    e.preventDefault();
+
+    if (!startTime) startTime = Date.now();
+    totalKeystrokes++;
+    const expected = ls.text[charIndex];
+    if (e.key.toLowerCase() === expected.toLowerCase()) {
+      playKeySound(false);
+      charIndex++;
+      updatePromptDisplay();
+      updateStats();
+      if (charIndex >= ls.text.length) onFinishExercise();
+    } else {
+      wrongCount++;
+      playKeySound(true);
+      const wrongKey = document.querySelector(`.key[data-key="${CSS.escape(e.key.toLowerCase())}"]`);
+      if (wrongKey) {
+        wrongKey.classList.add("pressed-wrong");
+        setTimeout(() => wrongKey.classList.remove("pressed-wrong"), 220);
+      }
+      updateStats();
+    }
+  });
+
+  document.getElementById("vn-input").addEventListener("input", (e) => {
+    const ls = getLesson();
+    if (ls.mode !== "vn") { e.target.value = ""; return; }
+    if (!startTime) startTime = Date.now();
+    playKeySound(false);
+    const val = e.target.value;
+    charIndex = Math.min(ls.text.length, val.length);
+    totalKeystrokes = Math.max(totalKeystrokes, val.length);
+    updatePromptDisplay();
+    updateStats();
+    if (val.trim() === ls.text.trim()) onFinishExercise();
+  });
+
+  function onFinishExercise() {
+    const wpm = Number(document.getElementById("st-wpm").textContent) || 0;
+    const accStr = document.getElementById("st-acc").textContent;
+    const acc = parseInt(accStr, 10) || 100;
+    const day = CURRICULUM[curDayIdx];
+
+    try {
+      const raw = JSON.parse(localStorage.getItem("go-may:v1") || '{"history":[],"dailySecondsMap":{}}');
+      const history = Array.isArray(raw.history) ? raw.history : [];
+      history.push({
+        lessonId: practiceMode === "course" ? `day-${day.id}-${curSubIdx + 1}` : `mode-${practiceMode}`,
+        mode: getLesson().mode === "key" ? "keys" : "text",
+        at: new Date().toISOString(),
+        wpm,
+        accuracy: acc,
+        seconds: startTime ? Math.max(1, Math.round((Date.now() - startTime) / 1000)) : 15
+      });
+      raw.history = history.slice(-200);
+      const todayIso = new Date().toISOString().slice(0, 10);
+      raw.dailySecondsMap = { ...(raw.dailySecondsMap || {}), [todayIso]: dailySeconds };
+      localStorage.setItem("go-may:v1", JSON.stringify(raw));
+      if (window.NTLabCloud && window.NTLabCloud.getStatus().user) {
+        window.NTLabCloud.syncAppState("go-may", raw).catch(() => {});
+      }
+    } catch { /* ignore */ }
+
+    renderSidebar();
+    renderSubLessons();
+    renderProfileAndPlanCard();
+
+    if (practiceMode === "ai") {
+      setTimeout(() => {
+        const activeTopic = document.querySelector(".ai-chip.active")?.dataset.topic || "email";
+        alert(`🎉 Đã lưu kết quả ${wpm} WPM (${accStr}) vào Hồ Sơ! Hệ thống tạo ngay bài AI tiếp theo.`);
+        generateAiExercise(activeTopic);
+      }, 150);
+      return;
+    }
+
+    if (practiceMode === "course" && curSubIdx < day.lessons.length - 1) {
+      setTimeout(() => {
+        alert(`🎉 Tuyệt vời! Đã lưu kết quả ${wpm} WPM (${accStr} chính xác) vào Hồ Sơ. Chuyển sang bài tiếp theo nhé!`);
+        curSubIdx++; renderSubLessons(); resetExercise();
+      }, 150);
+    } else {
+      const diagBox = document.getElementById("diag-box");
+      const diagText = document.getElementById("diag-text");
+      diagBox.style.display = "block";
+      diagText.innerHTML = `Đã lưu kết quả <strong>${wpm} WPM</strong> (Chính xác <strong>${accStr}</strong>) vào Hồ Sơ của bạn! Mở khóa Pro 39k để học hết 15 ngày và dùng <strong>AI Tạo Bài Gõ Email / Nhạc / Truyện không giới hạn</strong>!`;
+      openPayModal();
+    }
+  }
+
+  function openPayModal() {
+    document.getElementById("pay-modal").classList.add("open");
+  }
+  function closePayModal() {
+    document.getElementById("pay-modal").classList.remove("open");
+  }
+  function unlockProDemo() {
+    isProUnlocked = true;
+    if (window.NTLabPlatform) {
+      const client = window.NTLabPlatform.createClient();
+      client.setPreview("go-may", true);
+    }
+    closePayModal();
+    syncEntitlementFromPlatform();
+    alert("🎉 Đã mở khóa toàn bộ 15 Ngày học + AI Tạo Bài Gõ không giới hạn (Chế độ Demo)!");
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const el = document.getElementById("st-daily-time");
+    if (el) el.textContent = formatMMSS(dailySeconds);
+    if (window.NTLabCloud) {
+      window.NTLabCloud.onChange(() => syncEntitlementFromPlatform());
+    }
+    syncEntitlementFromPlatform();
+  });
+
+  renderKeyboard();
+  renderSidebar();
+  renderSubLessons();
+  resetExercise();
+</script>
+</body>
+</html>

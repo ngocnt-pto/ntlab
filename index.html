@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Kho phần mềm NTLab: Bộ công cụ kỹ năng số & năng suất gọn nhẹ cho người Việt. Mua lẻ từ 39k hoặc mở khóa trọn bộ 99k.">
+  <title>NTLab · Kho Phần Mềm Kỹ Năng & Năng Suất</title>
+  <link rel="icon" href="go-may/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="shared/hub-bar.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --dark: #0f172a;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --primary: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --warm: #ea580c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+    .hub-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 36px 18px 72px;
+    }
+    .hub-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      border-radius: 24px;
+      padding: 40px 32px;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 36px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16);
+    }
+    @media (max-width: 860px) {
+      .hub-hero { grid-template-columns: 1fr; padding: 28px 22px; }
+    }
+    .hub-eyebrow {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.18);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+    .hub-hero h1 {
+      font-size: clamp(28px, 4.2vw, 44px);
+      line-height: 1.12;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+    .hub-hero p {
+      color: #cbd5e1;
+      font-size: 16px;
+      max-width: 58ch;
+      margin-bottom: 22px;
+    }
+    .bundle-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(251, 191, 36, 0.55);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(8px);
+    }
+    .bundle-badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: #0f172a;
+      font-size: 11.5px;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .bundle-price {
+      font-size: 36px;
+      font-weight: 900;
+      color: #fbbf24;
+      line-height: 1.1;
+      margin: 6px 0;
+    }
+    .bundle-price del {
+      font-size: 15px;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+    .bundle-perks {
+      list-style: none;
+      margin: 12px 0 18px;
+      display: grid;
+      gap: 7px;
+      font-size: 13.5px;
+      color: #e2e8f0;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .section-head h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    .app-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .app-card:hover {
+      transform: translateY(-2px);
+      border-color: #94a3b8;
+    }
+    .app-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .app-cat {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-soft);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .app-status {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .app-status.unlocked {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .app-card h3 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 10px;
+    }
+    .app-path {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12.5px;
+      color: #64748b;
+    }
+    .app-tagline {
+      color: var(--muted);
+      font-size: 14.5px;
+      margin-top: 6px;
+    }
+    .app-highlights {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      font-size: 13.5px;
+      color: #334155;
+      margin-top: 12px;
+    }
+    .app-highlights li::before {
+      content: "✓ ";
+      color: #16a34a;
+      font-weight: 800;
+    }
+    .app-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .app-price strong {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .app-price small {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+    }
+    .button.primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .button.warm {
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #ffffff;
+    }
+    .button.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    /* Modal styles */
+    dialog#modal {
+      margin: auto;
+      border: none;
+      border-radius: 20px;
+      max-width: 600px;
+      width: calc(100% - 28px);
+      padding: 24px;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+    dialog#modal::backdrop {
+      background: rgba(15, 23, 42, 0.65);
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: #f1f5f9;
+      border: none;
+      border-radius: 999px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .modal-eyebrow {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #1d4ed8;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 14px;
+      margin: 12px 0;
+      align-items: center;
+    }
+    @media (max-width: 520px) {
+      .checkout-grid { grid-template-columns: 1fr; }
+    }
+    .qr-placeholder {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      color: #475569;
+    }
+    .payment-details {
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .payment-details div {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+    .demo-notice {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+  </style>
+  <script defer src="shared/catalog.js"></script>
+  <script defer src="shared/platform.js"></script>
+  <script defer src="shared/firebase-config.js"></script>
+  <script defer src="shared/firebase-cloud.js"></script>
+  <script defer src="shared/hub-bar.js"></script>
+</head>
+<body>
+  <main class="hub-container">
+    <section class="hub-hero">
+      <div>
+        <span class="hub-eyebrow">HỆ SINH THÁI MICRO-APPS CHO NGƯỜI VIỆT</span>
+        <h1>Phần mềm nhỏ gọn.<br>Dùng ngay trên trình duyệt.</h1>
+        <p>
+          Mỗi công cụ giải quyết triệt để một kỹ năng hoặc nhu cầu hàng ngày: không quảng cáo, không cần cài đặt nặng máy, dùng thử miễn phí ngay lập tức.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="./go-may/" class="button primary">Thử ngay Tập Gõ Máy Tính (/go-may) →</a>
+          <a href="./man-hinh-desktop/" class="button secondary" style="background:rgba(255,255,255,0.14);color:#fff;">Mở Màn Hình Desktop →</a>
+        </div>
+      </div>
+
+      <div class="bundle-card">
+        <span class="bundle-badge">ƯU ĐÃI RA MẮT · ALL-IN-ONE PASS</span>
+        <h2 style="font-size:20px;font-weight:800;">Mở khóa Trọn Bộ Kho Phần Mềm</h2>
+        <div class="bundle-price">99.000đ <del>299.000đ</del></div>
+        <ul class="bundle-perks">
+          <li>✦ Mở khóa <b>Tập Gõ Máy Tính Pro</b> (15 ngày luyện 10 ngón & âm phím cơ)</li>
+          <li>✦ Mở khóa <b>Màn Hình Desktop Plus</b> (Deep Work & âm thanh nền)</li>
+          <li>✦ Tự động mở khóa mọi phần mềm mới sắp ra mắt trên trang này</li>
+          <li>✦ Dùng chung 1 Mã Kích Hoạt duy nhất trên toàn hệ thống</li>
+        </ul>
+        <button type="button" class="button warm" style="width:100%;justify-content:center;" data-open-checkout="all-access">
+          Nhận Mã Trọn Bộ · 99.000đ →
+        </button>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <div>
+        <h2>Danh mục phần mềm</h2>
+        <p style="color:var(--muted);font-size:14.5px;">Bạn có thể dùng thử miễn phí, mua lẻ từng phần mềm (39.000đ) hoặc mở khóa trọn bộ.</p>
+      </div>
+      <button type="button" class="button secondary" data-open-checkout="all-access">🔑 Nhập Mã Kích Hoạt</button>
+    </div>
+
+    <div id="apps-grid" class="apps-grid"></div>
+  </main>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <button type="button" class="modal-close" aria-label="Đóng">✕</button>
+    <div id="modal-content"></div>
+  </dialog>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const catalog = window.NTLabCatalog;
+      const platform = window.NTLabPlatform.createClient();
+      const modal = document.getElementById('modal');
+      let currentAppId = 'go-may';
+
+      const hubBar = window.NTLabUI.mountBar(null, scope => openModal('go-may', scope));
+
+      function openModal(appId = 'go-may', scope = 'all-access') {
+        currentAppId = appId;
+        document.getElementById('modal-content').innerHTML = window.NTLabUI.buildCheckoutHtml(appId, scope);
+        if (!modal.open) modal.showModal();
+      }
+
+      function renderCatalog() {
+        platform.reload();
+        const grid = document.getElementById('apps-grid');
+        grid.innerHTML = catalog.apps.map(app => {
+          const unlocked = platform.hasAccess(app.id);
+          const ready = app.status === 'ready';
+          return `
+            <article class="app-card">
+              <div>
+                <div class="app-card-top">
+                  <span class="app-cat">${app.category}</span>
+                  <span class="app-status ${unlocked ? 'unlocked' : ''}">
+                    ${!ready ? 'Sắp ra mắt' : unlocked ? '✓ Đã mở khóa Plus' : 'Học thử miễn phí'}
+                  </span>
+                </div>
+                <h3>${app.name}</h3>
+                <div class="app-path">${app.path}</div>
+                <p class="app-tagline">${app.tagline}</p>
+                <ul class="app-highlights">
+                  ${app.highlights.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+              <div class="app-footer">
+                <div class="app-price">
+                  <strong>${catalog.formatCurrency(app.price)}</strong>
+                  <small>${unlocked ? 'Đã có quyền truy cập Plus' : 'Mua lẻ trọn đời'}</small>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  ${ready ? `
+                    <button type="button" class="button secondary" data-buy-app="${app.id}">
+                      ${unlocked ? 'Quản lý mã' : 'Mua lẻ 39k'}
+                    </button>
+                    <a href=".${app.path}" class="button primary">Mở phần mềm →</a>
+                  ` : `
+                    <button type="button" class="button secondary" data-open-checkout="all-access">Đặt trước trong gói 99k</button>
+                  `}
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+        hubBar?.render();
+      }
+
+      document.addEventListener('click', event => {
+        const btn = event.target.closest('button');
+        if (!btn) return;
+        if (btn.classList.contains('modal-close') || btn.dataset.ntlabAction === 'close') {
+          modal.close();
+          return;
+        }
+        if (btn.dataset.openCheckout) {
+          openModal('go-may', btn.dataset.openCheckout);
+          return;
+        }
+        if (btn.dataset.buyApp) {
+          openModal(btn.dataset.buyApp, btn.dataset.buyApp);
+          return;
+        }
+        if (btn.dataset.ntlabPlan) {
+          openModal(currentAppId, btn.dataset.ntlabPlan);
+          return;
+        }
+        if (btn.dataset.ntlabAction === 'activate-key') {
+          const inputEl = document.getElementById('ntlab-license-input');
+          const msgEl = document.getElementById('ntlab-license-msg');
+          Promise.resolve(
+            window.NTLabCloud ? window.NTLabCloud.activateLicense(inputEl?.value || '') : platform.activateLicense(inputEl?.value || '')
+          ).then(res => {
+            if (msgEl) {
+              msgEl.textContent = res.valid ? `Kích hoạt thành công mã ${res.code}!` : res.reason;
+              msgEl.className = `ntlab-license-msg ${res.valid ? 'ok' : 'err'}`;
+            }
+            if (res.valid) renderCatalog();
+          });
+          return;
+        }
+        if (btn.dataset.ntlabAction === 'toggle-preview') {
+          const scope = btn.dataset.ntlabScope || 'all-access';
+          const next = !platform.hasAccess(scope);
+          platform.setPreview(scope, next);
+          modal.close();
+          renderCatalog();
+        }
+      });
+
+      window.NTLabCloud?.onChange(() => renderCatalog());
+      renderCatalog();
+    });
+  </script>
+</body>
+</html>
