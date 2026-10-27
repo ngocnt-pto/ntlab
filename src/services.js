@@ -6,11 +6,7 @@
   const platform = root.NTLabPlatform ? root.NTLabPlatform.createClient(storage) : null;
   const cloud = root.NTLabCloud || null;
   const state = root.GoMayCore.readState(storage, defaults);
-  if (platform && platform.hasAccess('go-may')) {
-    state.plusPreview = true;
-  } else if (platform && state.plusPreview) {
-    platform.setPreview('go-may', true);
-  }
+  state.plusPreview = platform ? platform.hasAccess('go-may') : false;
 
   async function pullAndMergeCloud() {
     if (!cloud) return state;
@@ -52,21 +48,21 @@
       return ok;
     },
     access(lesson) {
-      const unlocked = platform ? platform.hasAccess('go-may') : state.plusPreview;
-      return root.GoMayCore.canAccess(lesson, unlocked || state.plusPreview);
+      const unlocked = platform ? platform.hasAccess('go-may') : false;
+      state.plusPreview = unlocked;
+      return root.GoMayCore.canAccess(lesson, unlocked);
     },
     addResult(result) {
       state.history.push(result);
       state.history = state.history.slice(-200);
-      return this.save();
-    },
-    setPreview(enabled) {
-      state.plusPreview = enabled === true;
-      if (platform) {
-        platform.setPreview('go-may', enabled === true);
-        if (!enabled) platform.setPreview('all-access', false);
+      if (cloud) {
+        cloud.recordVisitorTelemetry({ action: 'trial', appId: 'go-may' }).catch(() => {});
       }
       return this.save();
+    },
+    setPreview() {
+      // Đã tắt chế độ giả lập VIP local; chỉ mở khóa qua mã VIP thực tế
+      return this.syncPlatform();
     }
   };
 })(globalThis);

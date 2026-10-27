@@ -67,7 +67,17 @@
 
   function renderUI() {
     const unlocked = isUnlocked();
-    $('#plan-status').textContent = unlocked ? 'Plus · Đã mở khóa' : 'Miễn phí · Mở Plus 39k';
+    const details = platform ? platform.licenseDetails(APP_ID) : { remainingText: '' };
+    const priceLabel = window.NTLabCatalog
+      ? window.NTLabCatalog.formatCurrency(window.NTLabCatalog.getApp(APP_ID)?.price || 39000)
+      : '39.000đ';
+    $('#plan-status').textContent = unlocked
+      ? `👑 VIP Plus · ${details.remainingText}`
+      : `Dùng thử · Mở VIP ${priceLabel}`;
+    const checkoutBtn = $('#open-checkout');
+    if (checkoutBtn) {
+      checkoutBtn.textContent = unlocked ? 'Quản lý VIP / Gia hạn' : `Mở khóa VIP · ${priceLabel}`;
+    }
     $('#pomo-timer').textContent = formatTimer(remainingSeconds);
     $('#pomo-toggle').textContent = running ? 'Tạm dừng' : 'Bắt đầu tập trung';
     $('#session-stats').textContent = `Đã hoàn thành: ${state.completedSessions} phiên (${state.focusMinutes} phút sâu)`;
@@ -191,21 +201,11 @@
         window.NTLabCloud ? window.NTLabCloud.activateLicense(codeVal) : (platform ? platform.activateLicense(codeVal) : { valid: false, reason: 'Lỗi module' })
       ).then(res => {
         if (msgEl) {
-          msgEl.textContent = res.valid ? `Đã kích hoạt mã ${res.code} thành công!` : res.reason;
+          msgEl.textContent = res.valid ? `🎉 Đã kích hoạt mã ${res.code} (${res.remainingText || 'Đang hoạt động'})!` : res.reason;
           msgEl.className = `ntlab-license-msg ${res.valid ? 'ok' : 'err'}`;
         }
         if (res.valid) renderUI();
       });
-      return;
-    }
-    if (btn.dataset.ntlabAction === 'toggle-preview') {
-      const scope = btn.dataset.ntlabScope || APP_ID;
-      if (platform) {
-        const next = !platform.hasAccess(scope);
-        platform.setPreview(scope, next);
-      }
-      closeModal();
-      renderUI();
       return;
     }
     if (btn.id === 'open-checkout') {

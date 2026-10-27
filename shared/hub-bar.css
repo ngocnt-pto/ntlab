@@ -1,4 +1,4 @@
-/* NTLab Ecosystem Top Bar & Shared Checkout / Share UI */
+/* NTLab Ecosystem Top Bar, Real VietQR Auto-Checkout & Admin Dashboard UI */
 .ntlab-bar {
   background: #0f172a;
   color: #f8fafc;
@@ -54,6 +54,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .ntlab-status-pill {
   background: #1e293b;
@@ -69,6 +70,11 @@
   color: #6ee7b7;
   border-color: rgba(16, 185, 129, 0.4);
 }
+.ntlab-status-pill.expired {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.4);
+}
 .ntlab-bundle-btn {
   background: linear-gradient(135deg, #f59e0b, #ea580c);
   color: #ffffff;
@@ -82,7 +88,7 @@
 .ntlab-bundle-btn:hover {
   filter: brightness(1.08);
 }
-.ntlab-auth-btn {
+.ntlab-auth-btn, .ntlab-dl-btn {
   background: #1e293b;
   color: #f8fafc;
   border: 1px solid #334155;
@@ -92,12 +98,26 @@
   font-weight: 600;
   cursor: pointer;
 }
-.ntlab-auth-btn:hover {
+.ntlab-auth-btn:hover, .ntlab-dl-btn:hover {
   background: #334155;
 }
 .ntlab-auth-btn.logged-in {
   border-color: #38bdf8;
   color: #bae6fd;
+}
+.ntlab-admin-btn {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: #ffffff;
+  border: 1px solid #a78bfa;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35);
+}
+.ntlab-admin-btn:hover {
+  filter: brightness(1.1);
 }
 
 /* Shared Checkout Plan Switcher & License Box */
@@ -186,3 +206,174 @@
 .ntlab-license-msg.err {
   color: #dc2626;
 }
+.ntlab-autopay-banner {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #1e3a8a;
+  font-size: 12.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ntlab-autopay-banner.paid {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+/* Admin Dashboard Overlay (Strictly for tuanngocpt@gmail.com) */
+.ntlab-admin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.ntlab-admin-overlay.open {
+  display: flex;
+}
+.ntlab-admin-modal {
+  background: #ffffff;
+  color: #0f172a;
+  width: 100%;
+  max-width: 1080px;
+  max-height: 92vh;
+  border-radius: 20px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+.ntlab-admin-header {
+  background: linear-gradient(135deg, #0f172a, #1e1b4b);
+  color: #ffffff;
+  padding: 16px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.ntlab-admin-header h2 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fbbf24;
+  margin: 0;
+}
+.ntlab-admin-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 22px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #cbd5e1;
+  flex-wrap: wrap;
+}
+.ntlab-admin-tab {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ntlab-admin-tab.active {
+  background: #1d4ed8;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+.ntlab-admin-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+  flex: 1;
+}
+.ntlab-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.ntlab-kpi-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.ntlab-kpi-card span {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.ntlab-kpi-card strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 4px 0 2px;
+}
+.ntlab-kpi-card small {
+  font-size: 12px;
+  color: #475569;
+}
+.ntlab-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ntlab-admin-table th, .ntlab-admin-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  vertical-align: middle;
+}
+.ntlab-admin-table th {
+  background: #f8fafc;
+  font-weight: 800;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  color: #475569;
+}
+.ntlab-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.ntlab-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ntlab-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+.ntlab-field input, .ntlab-field select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 13.5px;
+}
+.ntlab-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.ntlab-badge.vip { background: #dcfce7; color: #166534; }
+.ntlab-badge.trial { background: #dbeafe; color: #1e40af; }
+.ntlab-badge.expired { background: #fee2e2; color: #991b1b; }

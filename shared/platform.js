@@ -2,6 +2,7 @@
   'use strict';
 
   const PLATFORM_STORAGE_KEY = 'ntlab:platform:v1';
+  const VISITOR_STORAGE_KEY = 'ntlab:visitor_id:v1';
   const SCOPE_BY_PREFIX = {
     ALL: 'all-access',
     GM: 'go-may',
@@ -48,6 +49,17 @@
     return `${prefix}-${payload}-${check}`;
   }
 
+  function generateOrderCode(scopeOrPrefix = 'ALL') {
+    const upper = String(scopeOrPrefix).toUpperCase();
+    const prefix = SCOPE_BY_PREFIX[upper] ? upper : (PREFIX_BY_SCOPE[scopeOrPrefix] || 'ALL');
+    const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    return `NTLAB-${prefix}-${code}`;
+  }
+
   function verifyLicenseKey(rawCode) {
     if (typeof rawCode !== 'string') return { valid: false, reason: 'Mã không hợp lệ.' };
     const cleaned = rawCode.trim().toUpperCase().replace(/\s+/g, '');
@@ -68,10 +80,43 @@
     };
   }
 
+  function computeExpiresAt(activatedAtIso, durationDays) {
+    const days = Number(durationDays);
+    if (!Number.isFinite(days) || days <= 0) return null;
+    const baseMs = activatedAtIso ? Date.parse(activatedAtIso) : Date.now();
+    const validBase = Number.isFinite(baseMs) ? baseMs : Date.now();
+    return new Date(validBase + days * 86400000).toISOString();
+  }
+
+  function isLicenseActive(item, nowMs = Date.now()) {
+    if (!item || typeof item.code !== 'string') return false;
+    if (item.revoked === true) return false;
+    const v = verifyLicenseKey(item.code);
+    if (!v.valid) return false;
+    if (item.expiresAt) {
+      const expMs = Date.parse(item.expiresAt);
+      if (Number.isFinite(expMs) && expMs <= nowMs) return false;
+    }
+    return true;
+  }
+
+  function formatRemainingTime(expiresAt, nowMs = Date.now()) {
+    if (!expiresAt) return 'Vĩnh viễn';
+    const expMs = Date.parse(expiresAt);
+    if (!Number.isFinite(expMs)) return 'Vĩnh viễn';
+    const diffMs = expMs - nowMs;
+    if (diffMs <= 0) return 'Đã hết hạn';
+    const days = Math.ceil(diffMs / 86400000);
+    const dateStr = new Date(expMs).toLocaleDateString('vi-VN');
+    return `Còn ${days} ngày (đến ${dateStr})`;
+  }
+
   function defaultPlatformState() {
     return {
       previews: { 'all-access': false, 'go-may': false, 'man-hinh-desktop': false },
-      licenses: []
+      licenses: [],
+      trialStartedAt: null,
+      downloadsCount: 0
     };
   }
 
@@ -81,24 +126,28 @@
     try {
       const raw = JSON.parse(storage.getItem(PLATFORM_STORAGE_KEY));
       if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
-        if (raw.previews && typeof raw.previews === 'object') {
-          for (const key of Object.keys(raw.previews)) {
-            if (typeof raw.previews[key] === 'boolean') fallback.previews[key] = raw.previews[key];
-          }
-        }
+        if (typeof raw.trialStartedAt === 'string') fallback.trialStartedAt = raw.trialStartedAt;
+        if (Number(raw.downloadsCount) > 0) fallback.downloadsCount = Number(raw.downloadsCount);
         if (Array.isArray(raw.licenses)) {
           fallback.licenses = raw.licenses.filter(item => {
             if (!item || typeof item.code !== 'string') return false;
             return verifyLicenseKey(item.code).valid;
+          }).map(item => {
+            const v = verifyLicenseKey(item.code);
+            const activatedAt = item.activatedAt || new Date().toISOString();
+            const durationDays = item.durationDays !== undefined ? Number(item.durationDays) : 365;
+            const expiresAt = item.expiresAt !== undefined
+              ? item.expiresAt
+              : computeExpiresAt(activatedAt, durationDays);
+            return {
+              code: v.code,
+              scope: v.scope,
+              activatedAt,
+              durationDays,
+              expiresAt,
+              revoked: Boolean(item.revoked)
+            };
           }).slice(-50);
-        }
-      }
-      // Đồng bộ trạng thái xem thử cũ từ go-may:v1 nếu có
-      const legacyGoMay = storage.getItem('go-may:v1');
-      if (legacyGoMay) {
-        const parsed = JSON.parse(legacyGoMay);
-        if (parsed && parsed.plusPreview === true && !raw) {
-          fallback.previews['go-may'] = true;
         }
       }
       return fallback;
@@ -117,25 +166,64 @@
     }
   }
 
-  function isAppUnlocked(state, appId) {
-    if (!state) return false;
-    const hasLicense = Array.isArray(state.licenses) && state.licenses.some(
-      item => item.scope === 'all-access' || item.scope === appId
-    );
-    if (hasLicense) return true;
-    const previews = state.previews || {};
-    return Boolean(previews['all-access'] || previews[appId]);
+  function getOrCreateVisitorId(storage) {
+    if (!storage && typeof localStorage !== 'undefined') {
+      try { storage = localStorage; } catch { storage = null; }
+    }
+    const alphabet = '23456789abcdefghjkmnpqrstuvwxyz';
+    if (storage) {
+      try {
+        const existing = storage.getItem(VISITOR_STORAGE_KEY);
+        if (existing && /^v-[a-zA-Z0-9_-]{8,40}$/.test(existing)) return existing;
+      } catch { /* ignore */ }
+    }
+    let id = 'v-';
+    for (let i = 0; i < 16; i++) {
+      id += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    if (storage) {
+      try { storage.setItem(VISITOR_STORAGE_KEY, id); } catch { /* ignore */ }
+    }
+    return id;
   }
 
-  function getUnlockMode(state, appId) {
-    if (!state) return 'free';
-    if (Array.isArray(state.licenses)) {
-      if (state.licenses.some(item => item.scope === 'all-access')) return 'license-bundle';
-      if (state.licenses.some(item => item.scope === appId)) return 'license-single';
-    }
-    if (state.previews?.['all-access']) return 'preview-bundle';
-    if (state.previews?.[appId]) return 'preview-single';
+  function isAppUnlocked(state, appId, nowMs = Date.now()) {
+    if (!state || !Array.isArray(state.licenses)) return false;
+    return state.licenses.some(item => {
+      if (!isLicenseActive(item, nowMs)) return false;
+      return item.scope === 'all-access' || item.scope === appId || appId === 'all-access' && item.scope === 'all-access';
+    });
+  }
+
+  function getUnlockMode(state, appId, nowMs = Date.now()) {
+    if (!state || !Array.isArray(state.licenses)) return 'free';
+    const matching = state.licenses.filter(item => item.scope === 'all-access' || item.scope === appId);
+    const activeBundle = matching.find(item => item.scope === 'all-access' && isLicenseActive(item, nowMs));
+    if (activeBundle) return 'license-bundle';
+    const activeSingle = matching.find(item => item.scope === appId && isLicenseActive(item, nowMs));
+    if (activeSingle) return 'license-single';
+    if (matching.length > 0) return 'expired';
     return 'free';
+  }
+
+  function getLicenseDetails(state, appId = 'all-access', nowMs = Date.now()) {
+    const mode = getUnlockMode(state, appId, nowMs);
+    const licenses = Array.isArray(state?.licenses) ? state.licenses : [];
+    const active = licenses.find(item => (item.scope === 'all-access' || item.scope === appId) && isLicenseActive(item, nowMs))
+      || licenses.find(item => isLicenseActive(item, nowMs))
+      || null;
+    const latestExpired = !active
+      ? (licenses.find(item => item.scope === 'all-access' || item.scope === appId) || licenses[licenses.length - 1] || null)
+      : null;
+    const target = active || latestExpired;
+    return {
+      unlocked: Boolean(active && (active.scope === 'all-access' || active.scope === appId)),
+      mode,
+      license: target,
+      expiresAt: target ? target.expiresAt : null,
+      durationDays: target ? target.durationDays : null,
+      remainingText: target ? formatRemainingTime(target.expiresAt, nowMs) : 'Chưa kích hoạt'
+    };
   }
 
   function createClient(storage) {
@@ -153,6 +241,8 @@
         const fresh = readPlatformState(storage);
         state.previews = fresh.previews;
         state.licenses = fresh.licenses;
+        state.trialStartedAt = fresh.trialStartedAt;
+        state.downloadsCount = fresh.downloadsCount;
         return state;
       },
       hasAccess(appId, tier = 'plus') {
@@ -162,23 +252,59 @@
       unlockStatus(appId) {
         return getUnlockMode(state, appId);
       },
-      setPreview(scope, enabled) {
-        state.previews[scope] = Boolean(enabled);
-        return this.save();
+      licenseDetails(appId) {
+        return getLicenseDetails(state, appId);
       },
-      activateLicense(rawCode) {
-        const result = verifyLicenseKey(rawCode);
-        if (!result.valid) return result;
-        const exists = state.licenses.some(item => item.code === result.code);
-        if (!exists) {
-          state.licenses.push({
-            code: result.code,
-            scope: result.scope,
-            activatedAt: new Date().toISOString()
-          });
+      setPreview() {
+        // Đã tắt hoàn toàn chế độ giả lập VIP local để sử dụng thực tế
+        return false;
+      },
+      markTrialStarted() {
+        if (!state.trialStartedAt) {
+          state.trialStartedAt = new Date().toISOString();
           this.save();
         }
-        return { ...result, alreadyActivated: exists };
+        return state.trialStartedAt;
+      },
+      incrementDownload() {
+        state.downloadsCount = (Number(state.downloadsCount) || 0) + 1;
+        this.save();
+        return state.downloadsCount;
+      },
+      activateLicense(rawCode, meta = {}) {
+        const result = verifyLicenseKey(rawCode);
+        if (!result.valid) return result;
+        const catalogCfg = root.NTLabCatalog ? root.NTLabCatalog.getScopeConfig(result.scope) : null;
+        const defaultDays = catalogCfg && catalogCfg.durationDays !== undefined ? Number(catalogCfg.durationDays) : 365;
+        const durationDays = meta.durationDays !== undefined ? Number(meta.durationDays) : defaultDays;
+        const activatedAt = meta.activatedAt || new Date().toISOString();
+        const expiresAt = meta.expiresAt !== undefined
+          ? meta.expiresAt
+          : computeExpiresAt(activatedAt, durationDays);
+
+        const existingIdx = state.licenses.findIndex(item => item.code === result.code);
+        const entry = {
+          code: result.code,
+          scope: result.scope,
+          activatedAt,
+          durationDays,
+          expiresAt,
+          revoked: Boolean(meta.revoked)
+        };
+
+        if (existingIdx >= 0) {
+          state.licenses[existingIdx] = { ...state.licenses[existingIdx], ...entry };
+        } else {
+          state.licenses.push(entry);
+        }
+        this.save();
+        return {
+          ...result,
+          durationDays,
+          expiresAt,
+          remainingText: formatRemainingTime(expiresAt),
+          alreadyActivated: existingIdx >= 0
+        };
       },
       removeLicense(code) {
         state.licenses = state.licenses.filter(item => item.code !== code);
@@ -189,12 +315,19 @@
 
   const api = {
     PLATFORM_STORAGE_KEY,
+    VISITOR_STORAGE_KEY,
     generateLicenseKey,
+    generateOrderCode,
     verifyLicenseKey,
+    computeExpiresAt,
+    isLicenseActive,
+    formatRemainingTime,
+    getOrCreateVisitorId,
     readPlatformState,
     savePlatformState,
     isAppUnlocked,
     getUnlockMode,
+    getLicenseDetails,
     createClient
   };
 

@@ -1078,14 +1078,16 @@
   </div>
 
   <div class="topbar-right">
+    <button type="button" class="btn btn-ai" id="btn-top-admin" style="display:none;" onclick="window.NTLabUI?.openAdminDashboard()">🛡️ Quản Trị (Admin)</button>
     <select id="sound-select" class="select-sound" aria-label="Chọn âm thanh bàn phím">
       <option value="thock">🔊 Phím cơ Thocky (Êm trầm)</option>
       <option value="blue">🔊 Phím cơ Blue Switch (Tách tách)</option>
       <option value="mute">🔇 Tắt âm</option>
     </select>
+    <button type="button" class="btn btn-ghost" onclick="window.NTLabUI?.downloadSoftwarePackage('go-may')">⬇️ Tải phần mềm</button>
     <button type="button" class="btn btn-ghost" onclick="openProfileModal()">📊 Hồ Sơ & Gói ĐK</button>
     <button type="button" class="btn btn-ghost" onclick="exportSpeedCard()">📸 Thẻ Tốc Độ</button>
-    <button type="button" class="btn btn-pro" id="btn-top-unlock" onclick="openPayModal()">🔓 Mở khóa 15 Ngày · 39k</button>
+    <button type="button" class="btn btn-pro" id="btn-top-unlock" onclick="openPayModal('go-may')">🔓 Mở khóa 15 Ngày · 39k</button>
     <button type="button" class="btn btn-ghost" id="btn-google-login" onclick="handleGoogleLogin()">☁️ Đăng nhập Google</button>
   </div>
 </header>
@@ -1310,52 +1312,19 @@
   </aside>
 </div>
 
-<!-- MODAL BÁN HÀNG & KÍCH HOẠT MÃ CLOUD FIRESTORE -->
+<!-- MODAL BÁN HÀNG & THANH TOÁN VIETQR TỰ ĐỘNG CLOUD FIRESTORE -->
 <div class="modal-backdrop" id="pay-modal">
   <div class="modal-box">
     <div class="modal-head">
-      <h3>⚡ MỞ KHÓA TẬP GÕ MÁY TÍNH PRO — CHỈ 39.000Đ</h3>
+      <h3 id="pay-modal-heading">⚡ MỞ KHÓA VIP TẬP GÕ MÁY TÍNH — THANH TOÁN VIETQR TỰ ĐỘNG</h3>
       <button class="close-btn" onclick="closePayModal()">×</button>
     </div>
     <div class="modal-body">
       <div class="diag-box" id="diag-box">
-        <strong style="color:#991b1b;" id="diag-title">🎯 Kết quả bắt bệnh đôi tay của bạn:</strong>
+        <strong style="color:#991b1b;" id="diag-title">🎯 Kết quả luyện tập vừa lưu của bạn:</strong>
         <p style="font-size:0.86rem;margin-top:4px;" id="diag-text"></p>
       </div>
-      <div class="pay-grid">
-        <div>
-          <div style="font-size:0.8rem;font-weight:800;color:#15803d;">ƯU ĐÃI EARLY BIRD · MUA 1 LẦN DÙNG MÃI MÃI</div>
-          <div class="price-tag">39.000đ <span class="price-old">199.000đ</span></div>
-          <ul style="list-style:none;font-size:0.86rem;display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-weight:600;color:#334155;">
-            <li>✅ Mở khóa toàn bộ <strong>Ngày 4 đến Ngày 15</strong> (Bài luyện dài chuyên sâu)</li>
-            <li>✅ <strong>Mở khóa không giới hạn AI Tạo Bài Gõ</strong> (Email, Bài hát, Truyện cười, Cổ tích)</li>
-            <li>✅ Chế độ <strong>Tự dán văn bản bất kỳ</strong> để luyện gõ tài liệu riêng</li>
-            <li>✅ Hoặc chọn <strong>Gói Trọn Bộ 99.000đ</strong> mở khóa toàn bộ kho phần mềm NTLab</li>
-          </ul>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-pro" style="flex:1;justify-content:center;padding:10px;" onclick="unlockProDemo()">
-              ✨ Mở Khóa Thử Nghiệm (Demo)
-            </button>
-            <button class="btn btn-ghost" style="padding:10px;background:#f1f5f9;color:#0f172a;border-color:#cbd5e1;" onclick="exportSpeedCard()">
-              📸 Tải Thẻ Tốc Độ
-            </button>
-          </div>
-        </div>
-        <div class="qr-card">
-          <div style="font-weight:800;font-size:0.8rem;">QUÉT VIETQR TỰ ĐỘNG MỞ</div>
-          <div class="qr-box">MÃ VIETQR<br/>39.000 VNĐ<br/>(Hoặc 99k Trọn Bộ)</div>
-          <div style="font-size:0.74rem;color:#475569;">Nội dung CK: <strong>TAPGO</strong><br/>Mở khóa tức thì trong 3 giây</div>
-        </div>
-      </div>
-
-      <div class="ntlab-license-box" style="margin-top:16px;">
-        <label for="license-code-input">🔑 Đã có Mã Kích Hoạt? Nhập mã (GM-... hoặc ALL-...) để mở khóa & lưu lên Google Cloud:</label>
-        <div class="ntlab-license-row">
-          <input id="license-code-input" type="text" placeholder="Ví dụ: ALL-MJXSVK-W3XW hoặc GM-MTVZ6F-EWC8" autocomplete="off" spellcheck="false" />
-          <button type="button" class="btn btn-pro" onclick="handleActivateLicense()">Kích hoạt mã</button>
-        </div>
-        <div id="license-code-msg" class="ntlab-license-msg" role="status" aria-live="polite"></div>
-      </div>
+      <div id="pay-modal-dynamic-content"></div>
     </div>
   </div>
 </div>
@@ -1937,34 +1906,71 @@
   }
 
   function getSubscriptionInfo() {
-    let status = "locked";
+    let status = "free";
     let codes = [];
+    let remainingText = "Chưa kích hoạt mã";
+    let isPro = false;
     if (window.NTLabPlatform) {
       const client = window.NTLabPlatform.createClient();
-      isProUnlocked = client.hasAccess("go-may");
-      status = client.unlockStatus("go-may");
+      const details = client.licenseDetails("go-may");
+      isProUnlocked = details.unlocked;
+      status = details.mode;
+      remainingText = details.remainingText || "Chưa kích hoạt";
       codes = Array.isArray(client.state?.licenses) ? client.state.licenses.map(l => l.code) : [];
+      isPro = details.unlocked;
     }
-    let planTitle = "🎁 Gói Miễn Phí (Mở 3 Ngày đầu)";
-    let isPro = false;
+    const cat = window.NTLabCatalog;
+    const gmPrice = cat ? cat.formatCurrency(cat.getApp("go-may")?.price || 39000) : "39.000đ";
+    const bundlePrice = cat ? cat.formatCurrency(cat.bundle?.price || 99000) : "99.000đ";
+
+    let planTitle = "🎁 Đang Dùng Thử Miễn Phí (3 Ngày đầu)";
     if (status === "license-bundle") {
-      planTitle = "🌟 Gói Trọn Bộ All-in-One (99k)";
-      isPro = true;
-    } else if (status === "license-app") {
-      planTitle = "👑 Gói Pro 15 Ngày Vĩnh Viễn (39k)";
-      isPro = true;
-    } else if (status === "preview" || isProUnlocked) {
-      planTitle = "✨ Gói Pro (Chế độ Mở thử Demo)";
-      isPro = true;
+      planTitle = `🌟 Gói VIP Trọn Bộ (${bundlePrice})`;
+    } else if (status === "license-single") {
+      planTitle = `👑 Gói VIP Tập Gõ 15 Ngày (${gmPrice})`;
+    } else if (status === "expired") {
+      planTitle = "⚠️ Gói VIP Đã Hết Hạn (Cần gia hạn)";
     }
-    const codeLabel = codes.length > 0 ? `Mã: ${codes.join(", ")}` : (isPro ? "Đã mở khóa" : "Chưa kích hoạt mã");
-    return { isPro, status, codes, planTitle, codeLabel };
+    const codeLabel = isPro
+      ? `Hạn VIP: ${remainingText}`
+      : status === "expired"
+        ? "Đã hết hạn — Bấm gia hạn"
+        : "Chưa kích hoạt VIP";
+    return { isPro, status, codes, remainingText, planTitle, codeLabel };
   }
 
   function renderProfileAndPlanCard() {
     const summary = getSavedPracticeSummary();
     const sub = getSubscriptionInfo();
-    const cloudSt = window.NTLabCloud ? window.NTLabCloud.getStatus() : { user: null, lastSyncAt: null };
+    const cloudSt = window.NTLabCloud ? window.NTLabCloud.getStatus() : { user: null, lastSyncAt: null, isAdmin: false };
+
+    const adminTopBtn = document.getElementById("btn-top-admin");
+    if (adminTopBtn) {
+      adminTopBtn.style.display = cloudSt.isAdmin ? "inline-flex" : "none";
+    }
+
+    // Cập nhật giá động từ Catalog Cloud (do Admin tuanngocpt@gmail.com quản lý)
+    if (window.NTLabCatalog) {
+      const gmApp = window.NTLabCatalog.getApp("go-may");
+      const bundle = window.NTLabCatalog.bundle;
+      if (gmApp) {
+        const priceStr = window.NTLabCatalog.formatCurrency(gmApp.price);
+        const origStr = window.NTLabCatalog.formatCurrency(gmApp.originalPrice);
+        const durStr = window.NTLabCatalog.formatDuration(gmApp.durationDays);
+        const mainPriceEl = document.querySelector(".offer-price-main");
+        const oldPriceEl = document.querySelector(".offer-price-old");
+        const guaranteeStrong = document.querySelector(".left-guarantee-box strong");
+        const guaranteeSpan = document.querySelector(".left-guarantee-box span");
+        if (mainPriceEl) mainPriceEl.textContent = priceStr;
+        if (oldPriceEl) oldPriceEl.textContent = origStr;
+        if (guaranteeStrong) guaranteeStrong.textContent = `⚡ Chỉ ${priceStr} · Thời hạn: ${durStr}`;
+        if (guaranteeSpan) guaranteeSpan.textContent = `Mở khóa 15 Ngày + AI Tạo Bài Gõ không giới hạn (${durStr})!`;
+      }
+      if (bundle) {
+        const upsellPriceEl = document.querySelector(".bundle-upsell-price");
+        if (upsellPriceEl) upsellPriceEl.textContent = window.NTLabCatalog.formatCurrency(bundle.price);
+      }
+    }
 
     // Cập nhật thẻ trực tiếp ở cột phải
     const userLabel = document.getElementById("uc-user-label");
@@ -2009,7 +2015,7 @@
       const syncTimeStr = cloudSt.lastSyncAt ? new Date(cloudSt.lastSyncAt).toLocaleTimeString("vi-VN") : "vừa xong";
       pmSync.textContent = cloudSt.user
         ? `✅ Đã kết nối Firebase Cloud (ntlab-apps) · Đồng bộ gần nhất: ${syncTimeStr}`
-        : "Dữ liệu đang lưu trên trình duyệt này. Hãy bấm Đăng nhập Google để đồng bộ tiến độ & gói cước lên Cloud.";
+        : "Dữ liệu đang lưu trên trình duyệt này. Hãy bấm Đăng nhập Google để đồng bộ tiến độ & gói VIP lên Cloud.";
     }
     if (pmBtnAuth) {
       pmBtnAuth.textContent = cloudSt.user ? "🚪 Đăng xuất tài khoản" : "☁️ Đăng nhập Google ngay";
@@ -2017,8 +2023,8 @@
     if (pmPlanTitle) pmPlanTitle.textContent = sub.planTitle;
     if (pmPlanCodes) {
       pmPlanCodes.textContent = sub.codes.length > 0
-        ? `Mã bản quyền gắn với tài khoản: ${sub.codes.join(", ")}`
-        : (sub.isPro ? "Trạng thái: Đang mở khóa chế độ Demo" : "Mã bản quyền: Chưa kích hoạt (Mở sẵn 3 ngày đầu)");
+        ? `Mã VIP: ${sub.codes.join(", ")} · Thời hạn: ${sub.remainingText}`
+        : "Trạng thái: Đang dùng thử miễn phí (Mở sẵn 3 ngày đầu)";
     }
 
     const pmLessons = document.getElementById("pm-stat-lessons");
@@ -2103,9 +2109,12 @@
 
   function syncEntitlementFromPlatform() {
     const sub = getSubscriptionInfo();
+    const gmPrice = window.NTLabCatalog ? window.NTLabCatalog.formatCurrency(window.NTLabCatalog.getApp("go-may")?.price || 39000) : "39k";
     const unlockBtn = document.getElementById("btn-top-unlock");
     if (unlockBtn) {
-      unlockBtn.textContent = sub.isPro ? "✅ Đã Mở Full 15 Ngày" : "🔓 Mở khóa 15 Ngày · 39k";
+      unlockBtn.textContent = sub.isPro
+        ? `👑 VIP (${sub.remainingText})`
+        : `🔓 Mở khóa VIP · ${gmPrice}`;
     }
     const googleBtn = document.getElementById("btn-google-login");
     if (googleBtn && window.NTLabCloud) {
@@ -2122,7 +2131,6 @@
     if (!window.NTLabCloud) return;
     const st = window.NTLabCloud.getStatus();
     if (st.user) {
-      // Nếu đã đăng nhập, bấm vào nút tài khoản sẽ mở Hồ Sơ & Gói Đăng Ký (tránh bấm nhầm bị thoát)
       openProfileModal();
       return;
     }
@@ -2131,29 +2139,13 @@
     syncEntitlementFromPlatform();
   }
 
-  async function handleActivateLicense() {
-    const inputEl = document.getElementById("license-code-input");
-    const msgEl = document.getElementById("license-code-msg");
-    const raw = inputEl ? inputEl.value : "";
-    const res = window.NTLabCloud
-      ? await window.NTLabCloud.activateLicense(raw)
-      : (window.NTLabPlatform ? window.NTLabPlatform.createClient().activateLicense(raw) : { valid: false, reason: "Lỗi module" });
-
-    if (msgEl) {
-      msgEl.textContent = res.valid ? `🎉 Kích hoạt thành công mã ${res.code}! Đã mở khóa & lưu vào Hồ Sơ Cloud.` : res.reason;
-      msgEl.className = `ntlab-license-msg ${res.valid ? 'ok' : 'err'}`;
-    }
-    if (res.valid) {
-      syncEntitlementFromPlatform();
-    }
-  }
-
   function exportSpeedCard() {
     const wpm = Number(document.getElementById("st-wpm").textContent) || 0;
     const acc = document.getElementById("st-acc").textContent || "100%";
     const day = CURRICULUM[curDayIdx];
     if (window.NTLabUI) {
       window.NTLabUI.downloadShareCard({
+        appId: "go-may",
         title: "Tập Gõ Máy Tính · Gõ 10 Ngón 15 Ngày",
         primaryStat: `${wpm} WPM`,
         secondaryStat: `Độ chính xác: ${acc}`,
@@ -2188,6 +2180,7 @@
     if (!list) return;
     list.innerHTML = "";
     const summary = getSavedPracticeSummary();
+    const gmPrice = window.NTLabCatalog ? window.NTLabCatalog.formatCurrency(window.NTLabCatalog.getApp("go-may")?.price || 39000) : "39k";
     CURRICULUM.forEach((d, idx) => {
       const unlocked = d.free || isProUnlocked;
       let doneInDay = 0;
@@ -2200,13 +2193,13 @@
       btn.innerHTML = `
         <div class="day-top">
           <span>${d.tag} · ${progressLabel}</span>
-          <span class="${unlocked ? 'badge-free' : 'badge-lock'}">${unlocked ? (doneInDay === d.lessons.length ? '✅ HOÀN THÀNH' : 'MỞ SẴN') : '🔒 PRO 39K'}</span>
+          <span class="${unlocked ? 'badge-free' : 'badge-lock'}">${unlocked ? (doneInDay === d.lessons.length ? '✅ HOÀN THÀNH' : 'MỞ SẴN') : `🔒 VIP ${gmPrice}`}</span>
         </div>
         <div class="day-title">${d.title}</div>
         <div class="day-desc">${d.desc}</div>
       `;
       btn.onclick = () => {
-        if (!unlocked) { openPayModal(); return; }
+        if (!unlocked) { openPayModal("go-may"); return; }
         curDayIdx = idx; curSubIdx = 0;
         if (practiceMode !== "course") switchPracticeMode("course");
         else { renderSidebar(); renderSubLessons(); resetExercise(); }
@@ -2329,7 +2322,7 @@
   window.addEventListener("keydown", (e) => {
     if (document.getElementById("pay-modal").classList.contains("open") || document.getElementById("profile-modal").classList.contains("open")) return;
     const activeId = document.activeElement ? document.activeElement.id : "";
-    if (["license-code-input", "ai-prompt-input", "custom-text-input"].includes(activeId)) return;
+    if (["ntlab-license-input", "ai-prompt-input", "custom-text-input"].includes(activeId)) return;
     const ls = getLesson();
     if (ls.mode !== "key") return;
     if (e.key.length !== 1) return;
@@ -2390,8 +2383,11 @@
       const todayIso = new Date().toISOString().slice(0, 10);
       raw.dailySecondsMap = { ...(raw.dailySecondsMap || {}), [todayIso]: dailySeconds };
       localStorage.setItem("go-may:v1", JSON.stringify(raw));
-      if (window.NTLabCloud && window.NTLabCloud.getStatus().user) {
-        window.NTLabCloud.syncAppState("go-may", raw).catch(() => {});
+      if (window.NTLabCloud) {
+        window.NTLabCloud.recordVisitorTelemetry({ action: "trial", appId: "go-may" }).catch(() => {});
+        if (window.NTLabCloud.getStatus().user) {
+          window.NTLabCloud.syncAppState("go-may", raw).catch(() => {});
+        }
       }
     } catch { /* ignore */ }
 
@@ -2413,31 +2409,62 @@
         alert(`🎉 Tuyệt vời! Đã lưu kết quả ${wpm} WPM (${accStr} chính xác) vào Hồ Sơ. Chuyển sang bài tiếp theo nhé!`);
         curSubIdx++; renderSubLessons(); resetExercise();
       }, 150);
-    } else {
+    } else if (!isProUnlocked) {
       const diagBox = document.getElementById("diag-box");
       const diagText = document.getElementById("diag-text");
-      diagBox.style.display = "block";
-      diagText.innerHTML = `Đã lưu kết quả <strong>${wpm} WPM</strong> (Chính xác <strong>${accStr}</strong>) vào Hồ Sơ của bạn! Mở khóa Pro 39k để học hết 15 ngày và dùng <strong>AI Tạo Bài Gõ Email / Nhạc / Truyện không giới hạn</strong>!`;
-      openPayModal();
+      if (diagBox && diagText) {
+        diagBox.style.display = "block";
+        diagText.innerHTML = `Đã lưu kết quả <strong>${wpm} WPM</strong> (Chính xác <strong>${accStr}</strong>) vào Hồ Sơ của bạn! Nâng cấp gói VIP để mở khóa trọn vẹn 15 ngày và dùng <strong>AI Tạo Bài Gõ Email / Nhạc / Truyện không giới hạn</strong>!`;
+      }
+      openPayModal("go-may");
+    } else {
+      alert(`🎉 Hoàn thành xuất sắc với tốc độ ${wpm} WPM (${accStr})!`);
+      resetExercise();
     }
   }
 
-  function openPayModal() {
+  function openPayModal(scope = "go-may") {
+    const dyn = document.getElementById("pay-modal-dynamic-content");
+    if (dyn && window.NTLabUI) {
+      dyn.innerHTML = window.NTLabUI.buildCheckoutHtml("go-may", scope);
+    }
     document.getElementById("pay-modal").classList.add("open");
   }
+
   function closePayModal() {
     document.getElementById("pay-modal").classList.remove("open");
   }
-  function unlockProDemo() {
-    isProUnlocked = true;
-    if (window.NTLabPlatform) {
-      const client = window.NTLabPlatform.createClient();
-      client.setPreview("go-may", true);
+
+  document.addEventListener("click", (event) => {
+    const btn = event.target.closest("button");
+    if (!btn) return;
+    if (btn.dataset.ntlabPlan) {
+      openPayModal(btn.dataset.ntlabPlan);
+      return;
     }
-    closePayModal();
-    syncEntitlementFromPlatform();
-    alert("🎉 Đã mở khóa toàn bộ 15 Ngày học + AI Tạo Bài Gõ không giới hạn (Chế độ Demo)!");
-  }
+    if (btn.dataset.ntlabAction === "close") {
+      closePayModal();
+      return;
+    }
+    if (btn.dataset.ntlabAction === "activate-key") {
+      const inputEl = document.getElementById("ntlab-license-input");
+      const msgEl = document.getElementById("ntlab-license-msg");
+      const raw = inputEl ? inputEl.value : "";
+      Promise.resolve(
+        window.NTLabCloud
+          ? window.NTLabCloud.activateLicense(raw)
+          : (window.NTLabPlatform ? window.NTLabPlatform.createClient().activateLicense(raw) : { valid: false, reason: "Lỗi module" })
+      ).then(res => {
+        if (msgEl) {
+          msgEl.textContent = res.valid ? `🎉 Kích hoạt thành công mã ${res.code} (${res.remainingText || "Đang hoạt động"})!` : res.reason;
+          msgEl.className = `ntlab-license-msg ${res.valid ? "ok" : "err"}`;
+        }
+        if (res.valid) {
+          syncEntitlementFromPlatform();
+        }
+      });
+    }
+  });
 
   window.addEventListener("DOMContentLoaded", () => {
     const el = document.getElementById("st-daily-time");

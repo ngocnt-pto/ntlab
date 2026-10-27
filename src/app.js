@@ -245,12 +245,13 @@
   function showAccount() {
     const settings = service.state.settings;
     const cloudSt = service.cloud ? service.cloud.getStatus() : { configured: false, user: null };
+    const details = service.platform ? service.platform.licenseDetails('go-may') : { unlocked: false, remainingText: 'Chưa kích hoạt' };
     const googleBtn = cloudSt.user
       ? `<button class="google-button" data-action="google-auth"><span>☁️</span>Đang đồng bộ: ${escape(cloudSt.user.email)} · Bấm để đăng xuất</button>`
       : cloudSt.configured
         ? `<button class="google-button" data-action="google-auth"><span>G</span>Đăng nhập bằng Google · Đồng bộ Cloud Firestore</button>`
         : `<button class="google-button" disabled><span>G</span>Đăng nhập bằng Google · Điền shared/firebase-config.js để bật</button>`;
-    showModal(`<div class="modal-eyebrow">ĐỒNG BỘ FIREBASE CLOUD & CÀI ĐẶT</div><h2>Góc luyện tập của bạn.</h2><p class="modal-copy">${cloudSt.user ? `Kết quả và quyền mua hàng đang được đồng bộ tự động lên Google Cloud Firestore (${escape(cloudSt.user.email)}).` : 'Bạn đang dùng hồ sơ khách. Kết quả được giữ trên trình duyệt này và sẽ tự động gộp lên Cloud ngay khi bạn đăng nhập Google.'}</p>${googleBtn}<label class="setting-row"><span><strong>Âm thanh bàn phím</strong><p>Bật tiếng gõ nhẹ, tắt khi cần yên tĩnh.</p></span><input type="checkbox" data-setting="sound" ${settings.sound ? 'checked' : ''}></label><label class="setting-row"><span><strong>Bàn phím & bàn tay minh họa</strong><p>Hướng dẫn trực quan khi luyện từng phím.</p></span><input type="checkbox" data-setting="keyboard" ${settings.keyboard ? 'checked' : ''}></label><label class="setting-row"><span><strong>Xem thử Plus local</strong><p>Mô phỏng quyền truy cập. Chưa mua gói thật.</p></span><input type="checkbox" data-setting="plusPreview" ${service.state.plusPreview ? 'checked' : ''}></label><p class="modal-footnote">Bạn có thể xuất bản sao JSON ở mục Tiến bộ bất cứ lúc nào.</p><div class="modal-actions"><button class="button secondary" data-action="checkout">Xem gói 39k / 99k</button><button class="button primary" data-action="close">Xong rồi ${icon('check')}</button></div>`);
+    showModal(`<div class="modal-eyebrow">ĐỒNG BỘ FIREBASE CLOUD & CÀI ĐẶT</div><h2>Góc luyện tập của bạn.</h2><p class="modal-copy">${cloudSt.user ? `Kết quả và gói VIP đang được đồng bộ tự động lên Google Cloud Firestore (${escape(cloudSt.user.email)}).` : 'Bạn đang dùng hồ sơ khách. Kết quả được giữ trên trình duyệt này và sẽ tự động gộp lên Cloud ngay khi bạn đăng nhập Google.'}</p>${googleBtn}<label class="setting-row"><span><strong>Âm thanh bàn phím</strong><p>Bật tiếng gõ nhẹ, tắt khi cần yên tĩnh.</p></span><input type="checkbox" data-setting="sound" ${settings.sound ? 'checked' : ''}></label><label class="setting-row"><span><strong>Bàn phím & bàn tay minh họa</strong><p>Hướng dẫn trực quan khi luyện từng phím.</p></span><input type="checkbox" data-setting="keyboard" ${settings.keyboard ? 'checked' : ''}></label><div class="setting-row"><span><strong>Trạng thái Gói VIP</strong><p>${details.unlocked ? `Đang hoạt động (${escape(details.remainingText)})` : 'Đang dùng thử miễn phí'}</p></span></div><p class="modal-footnote">Bạn có thể xuất bản sao JSON ở mục Tiến bộ bất cứ lúc nào.</p><div class="modal-actions"><button class="button secondary" data-action="checkout">Mở khóa VIP / Gia hạn</button><button class="button primary" data-action="close">Xong rồi ${icon('check')}</button></div>`);
   }
   function nextLesson() {
     const next = course.lessons[course.lessons.findIndex(item => item.id === lesson.id)+1];
@@ -316,24 +317,11 @@
           msgEl.className = `ntlab-license-msg ${res.valid ? 'ok' : 'err'}`;
         }
         if (res.valid) {
-          service.state.plusPreview = true; save(); applySettings();
+          service.syncPlatform(); save(); applySettings();
           if (view === 'roadmap') renderDays();
-          toast('Đã kích hoạt mã thành công!');
+          toast('Đã kích hoạt mã VIP thành công!');
         }
       });
-      return;
-    }
-    if (button.dataset.ntlabAction === 'toggle-preview') {
-      const scope = button.dataset.ntlabScope || 'go-may';
-      if (scope === 'all-access' && service.platform) {
-        const nextState = !service.platform.hasAccess('all-access');
-        service.platform.setPreview('all-access', nextState);
-        setPreview(nextState);
-      } else {
-        setPreview(!service.state.plusPreview);
-      }
-      closeModal();
-      setView('roadmap');
       return;
     }
     if (button.dataset.action) actions[button.dataset.action]?.();
